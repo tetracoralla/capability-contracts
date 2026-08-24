@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "disposition", "complete", "blockers"],
+  "properties": {
+    "status": { "const": "ok" },
+    "disposition": { "enum": ["land", "blocked", "revert"] },
+    "complete": { "const": true },
+    "blockers": {
+      "type": "array",
+      "maxItems": 7,
+      "uniqueItems": true,
+      "items": { "enum": ["NO_CHANGE", "TARGET_FAILED", "TARGET_UNVERIFIED", "SURFACE_FAILED", "LOCKFILE_FAILED", "CONSUMER_FAILED", "CONSUMER_UNVERIFIED"] }
+    }
+  }
+}
+

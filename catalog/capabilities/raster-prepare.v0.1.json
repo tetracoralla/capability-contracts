@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "openadam.capability-profile.v0.3",
+  "id": "org.openadam.raster.prepare",
+  "version": "0.1.0",
+  "title": "Prepare raster assets",
+  "summary": "Perform bounded deterministic alpha trimming, explicit resizing, or placement of a caller-supplied brand mark on a local raster and write a PNG result.",
+  "lifecycle": "experimental",
+  "operations": [
+    {
+      "id": "trim-transparent",
+      "title": "Trim transparent bounds",
+      "description": "Crop only transparent outer pixels according to an explicit alpha threshold and optional padding. This operation does not infer or remove a visual background.",
+      "semantics": {
+        "resultVariability": "deterministic",
+        "contextSources": ["referenced-resource"],
+        "stateAccess": "write",
+        "idempotency": "non-idempotent",
+        "openWorld": false,
+        "ambiguity": "reject",
+        "provenance": "not-applicable"
+      },
+      "inputSchema": { "$ref": "./schemas/raster.trim-transparent.v0.1.input.schema.json" },
+      "outputSchema": { "$ref": "./schemas/raster.trim-transparent.v0.1.output.schema.json" },
+      "errors": [
+        { "code": "INVALID_INPUT", "description": "The path or option shape is outside the portable contract.", "retryable": false },
+        { "code": "SOURCE_NOT_FOUND", "description": "The named local raster does not exist.", "retryable": false },
+        { "code": "PATH_FORBIDDEN", "description": "A path escapes or violates the explicit workspace grant.", "retryable": false },
+        { "code": "IMAGE_INVALID", "description": "The source is not a supported safe raster.", "retryable": false },
+        { "code": "EMPTY_ALPHA", "description": "No pixel is above the requested alpha threshold.", "retryable": false },
+        { "code": "OUTPUT_EXISTS", "description": "The output already exists and overwrite was not authorized.", "retryable": false },
+        { "code": "OUTPUT_INVALID", "description": "The output cannot be encoded as the required PNG.", "retryable": false },
+        { "code": "LIMIT_EXCEEDED", "description": "An input, dimension, pixel, or output bound was exceeded.", "retryable": false },
+        { "code": "PROVIDER_FAILED", "description": "The provider could not safely complete the operation.", "retryable": true }
+      ]
+    },
+    {
+      "id": "resize",
+      "title": "Resize raster",
+      "description": "Render an exact caller-supplied output size using contain, centered cover, or stretch semantics.",
+      "semantics": {
+        "resultVariability": "deterministic",
+        "contextSources": ["referenced-resource"],
+        "stateAccess": "write",
+        "idempotency": "non-idempotent",
+        "openWorld": false,
+        "ambiguity": "reject",
+        "provenance": "not-applicable"
+      },
+      "inputSchema": { "$ref": "./schemas/raster.resize.v0.1.input.schema.json" },
+      "outputSchema": { "$ref": "./schemas/raster.resize.v0.1.output.schema.json" },
+      "errors": [
+        { "code": "INVALID_INPUT", "description": "The path, dimensions, or fit mode is outside the portable contract.", "retryable": false },
+        { "code": "SOURCE_NOT_FOUND", "description": "The named local raster does not exist.", "retryable": false },
+        { "code": "PATH_FORBIDDEN", "description": "A path escapes or violates the explicit workspace grant.", "retryable": false },
+        { "code": "IMAGE_INVALID", "description": "The source is not a supported safe raster.", "retryable": false },
+        { "code": "OUTPUT_EXISTS", "description": "The output already exists and overwrite was not authorized.", "retryable": false },
+        { "code": "OUTPUT_INVALID", "description": "The output cannot be encoded as the required PNG.", "retryable": false },
+        { "code": "LIMIT_EXCEEDED", "description": "An input, dimension, pixel, or output bound was exceeded.", "retryable": false },
+        { "code": "PROVIDER_FAILED", "description": "The provider could not safely complete the operation.", "retryable": true }
+      ]
+    },
+    {
+      "id": "apply-brand-mark",
+      "title": "Apply a supplied brand mark",
+      "description": "Place a caller-supplied logo or authorization mark using a stable nine-anchor, margin, opacity, and maximum-width contract. This operation does not choose a mark or decide which assets may be shared.",
+      "semantics": {
+        "resultVariability": "deterministic",
+        "contextSources": ["referenced-resource"],
+        "stateAccess": "write",
+        "idempotency": "non-idempotent",
+        "openWorld": false,
+        "ambiguity": "reject",
+        "provenance": "not-applicable"
+      },
+      "inputSchema": { "$ref": "./schemas/raster.apply-brand-mark.v0.1.input.schema.json" },
+      "outputSchema": { "$ref": "./schemas/raster.apply-brand-mark.v0.1.output.schema.json" },
+      "errors": [
+        { "code": "INVALID_INPUT", "description": "The path or placement options are outside the portable contract.", "retryable": false },
+        { "code": "SOURCE_NOT_FOUND", "description": "The named source or mark raster does not exist.", "retryable": false },
+        { "code": "PATH_FORBIDDEN", "description": "A path escapes or violates the explicit workspace grant.", "retryable": false },
+        { "code": "IMAGE_INVALID", "description": "A source is not a supported safe raster.", "retryable": false },
+        { "code": "MARK_OUT_OF_BOUNDS", "description": "The requested mark cannot fit inside the target margins.", "retryable": false },
+        { "code": "OUTPUT_EXISTS", "description": "The output already exists and overwrite was not authorized.", "retryable": false },
+        { "code": "OUTPUT_INVALID", "description": "The output cannot be encoded as the required PNG.", "retryable": false },
+        { "code": "LIMIT_EXCEEDED", "description": "An input, dimension, pixel, or output bound was exceeded.", "retryable": false },
+        { "code": "PROVIDER_FAILED", "description": "The provider could not safely complete the operation.", "retryable": true }
+      ]
+    }
+  ]
+}

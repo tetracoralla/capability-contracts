@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "openadam.conformance-suite.v0.2",
+  "capabilityId": "org.openadam.structured-data.analyze",
+  "capabilityVersion": "0.1.0",
+  "claimLevel": "L0",
+  "cases": [
+    {
+      "id": "inspect-nested-record-set",
+      "operationId": "inspect",
+      "description": "Discovers the selectable nested record set and returns a bounded sample.",
+      "input": {
+        "source": { "path": "capabilities/fixtures/users.json" },
+        "sample_rows": 2
+      },
+      "expect": {
+        "outcome": "success",
+        "match": "subset",
+        "value": {
+          "source": { "format": "json" },
+          "shape": {
+            "kind": "tree",
+            "record_sets": [
+              {
+                "path": "/data/users",
+                "select": "data.users[*]",
+                "selectable": true,
+                "rows": 3,
+                "columns": 3
+              }
+            ]
+          },
+          "sample": { "status": 200 }
+        }
+      }
+    },
+    {
+      "id": "validate-nested-record-set",
+      "operationId": "validate",
+      "description": "Evaluates deterministic non-null and uniqueness assertions against the selected records.",
+      "input": {
+        "source": {
+          "path": "capabilities/fixtures/users.json",
+          "select": "data.users[*]"
+        },
+        "assertions": [
+          { "id": "id-required", "type": "not_null", "field": "userId" },
+          { "id": "id-unique", "type": "unique", "field": "userId" }
+        ],
+        "sample_rows": 1
+      },
+      "expect": {
+        "outcome": "success",
+        "match": "subset",
+        "value": {
+          "valid": true,
+          "shape": { "kind": "table", "rows": 3, "columns": 3 },
+          "schema_validation": null,
+          "assertions": [
+            { "id": "id-required", "type": "not_null", "status": "passed" },
+            { "id": "id-unique", "type": "unique", "status": "passed" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "report-failed-constraint",
+      "operationId": "validate",
+      "description": "A failed content constraint remains a successful validation result with valid=false.",
+      "input": {
+        "source": {
+          "path": "capabilities/fixtures/users.json",
+          "select": "data.users[*]"
+        },
+        "assertions": [
+          { "id": "age-required", "type": "not_null", "field": "age" }
+        ],
+        "sample_rows": 0
+      },
+      "expect": {
+        "outcome": "success",
+        "match": "subset",
+        "value": {
+          "valid": false,
+          "assertions": [
+            { "id": "age-required", "type": "not_null", "status": "failed" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "reject-missing-source",
+      "operationId": "inspect",
+      "description": "Reports the stable missing-source error.",
+      "input": { "source": { "path": "capabilities/fixtures/missing.json" } },
+      "expect": { "outcome": "error", "code": "SOURCE_NOT_FOUND" }
+    }
+  ]
+}

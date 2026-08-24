@@ -1,0 +1,42 @@
+{
+  "name": "@openadam/capability-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Portable capability contracts and conformance tooling for Agent capability providers.",
+  "author": "openAdam",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tetracoralla/capability-contracts.git"
+  },
+  "homepage": "https://github.com/tetracoralla/capability-contracts#readme",
+  "bugs": {
+    "url": "https://github.com/tetracoralla/capability-contracts/issues"
+  },
+  "keywords": [
+    "agent-tools",
+    "capability",
+    "conformance",
+    "contracts",
+    "json-schema",
+    "semantic-abi"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "audit:production": "npm audit --omit=dev --audit-level=high --registry=https://registry.npmjs.org",
+    "check": "npm run test && npm run validate:catalog && npm run check:legal && npm run check:repository",
+    "check:legal": "node scripts/generate-third-party-notices.mjs --check",
+    "check:local-pilots": "node scripts/check-local-pilots.mjs",
+    "check:repository": "node scripts/check-repository.mjs",
+    "generate:third-party-notices": "node scripts/generate-third-party-notices.mjs",
+    "test": "node --test test/*.test.mjs",
+    "validate:catalog": "node src/validate-catalog.mjs"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  }
+}

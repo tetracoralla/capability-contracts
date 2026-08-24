@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["dependency", "requiredPaths", "availablePaths"],
+  "properties": {
+    "dependency": { "type": "string", "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$", "maxLength": 214 },
+    "requiredPaths": { "$ref": "#/$defs/paths" },
+    "availablePaths": { "$ref": "#/$defs/availablePaths" }
+  },
+  "$defs": {
+    "path": { "type": "string", "minLength": 1, "maxLength": 300, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9._@+/-]+$" },
+    "paths": { "type": "array", "maxItems": 64, "uniqueItems": true, "items": { "$ref": "#/$defs/path" } },
+    "availablePaths": { "type": "array", "maxItems": 1024, "uniqueItems": true, "items": { "$ref": "#/$defs/path" } }
+  }
+}
+

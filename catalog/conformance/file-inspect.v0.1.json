@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "openadam.conformance-suite.v0.2",
+  "capabilityId": "org.openadam.file.inspect",
+  "capabilityVersion": "0.1.0",
+  "claimLevel": "L0",
+  "cases": [
+    {
+      "id": "inspect-json-file-envelope",
+      "operationId": "inspect",
+      "description": "Recognizes a parseable JSON file from evidence and returns a content digest.",
+      "input": {
+        "path": "capabilities/fixtures/users.json",
+        "mode": "standard",
+        "hash": "sha256"
+      },
+      "expect": {
+        "outcome": "success",
+        "match": "subset",
+        "value": {
+          "status": "ok",
+          "file": { "name": "users.json", "extension": ".json" },
+          "identity": {
+            "kind": "data",
+            "media_type": "application/json",
+            "format": "JSON",
+            "confidence": "high",
+            "extension_match": true
+          },
+          "integrity": { "readable": true, "parseable": true },
+          "structured": { "format": "json", "parseable": true }
+        }
+      }
+    },
+    {
+      "id": "reject-missing-file",
+      "operationId": "inspect",
+      "description": "Reports the stable missing-file error instead of guessing from the extension.",
+      "input": { "path": "capabilities/fixtures/missing.json" },
+      "expect": { "outcome": "error", "code": "FILE_NOT_FOUND" }
+    }
+  ]
+}

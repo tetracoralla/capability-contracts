@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:openadam:capability:raster.trim-transparent:v0.1:input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["source", "output"],
+  "properties": {
+    "source": { "type": "string", "minLength": 1, "maxLength": 4096 },
+    "output": { "type": "string", "minLength": 1, "maxLength": 4096, "pattern": "\\.[Pp][Nn][Gg]$" },
+    "alpha_threshold": { "type": "integer", "minimum": 0, "maximum": 254, "default": 0 },
+    "padding": { "type": "integer", "minimum": 0, "maximum": 8192, "default": 0 },
+    "overwrite": { "type": "boolean", "default": false }
+  }
+}

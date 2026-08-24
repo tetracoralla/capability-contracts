@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "dependency", "requestedSpec", "requestedMode", "resolvedVersion", "verification", "reasonCode"],
+  "properties": {
+    "status": { "const": "ok" },
+    "dependency": { "type": "string" },
+    "requestedSpec": { "type": "string" },
+    "requestedMode": { "enum": ["registry-range", "registry-exact", "file", "workspace", "git", "url", "alias", "tag", "other"] },
+    "resolvedVersion": { "type": ["string", "null"] },
+    "verification": { "enum": ["verified", "failed", "unverified"] },
+    "reasonCode": { "enum": ["NONE", "PACKAGE_MISSING", "UNSUPPORTED_TARGET_SPEC", "VERSION_MISSING", "VERSION_MISMATCH"] }
+  }
+}
+

@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:openadam:capability:raster.verify:v0.1:output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "source", "observed", "checks"],
+  "properties": {
+    "status": { "enum": ["pass", "fail"] },
+    "source": { "type": "string", "minLength": 1, "maxLength": 4096 },
+    "observed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "width", "height", "alpha"],
+      "properties": {
+        "format": { "enum": ["png", "jpeg", "gif", "webp", "xpm", "other"] },
+        "width": { "type": "integer", "minimum": 1, "maximum": 8192 },
+        "height": { "type": "integer", "minimum": 1, "maximum": 8192 },
+        "alpha": { "enum": ["present", "absent"] }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "prefixItems": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "expected", "observed", "passed"],
+          "properties": {
+            "id": { "const": "format" },
+            "expected": { "enum": ["png", "jpeg", "gif", "webp", "xpm"] },
+            "observed": { "enum": ["png", "jpeg", "gif", "webp", "xpm", "other"] },
+            "passed": { "type": "boolean" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "expected", "observed", "passed"],
+          "properties": {
+            "id": { "const": "width" },
+            "expected": { "type": "integer", "minimum": 1, "maximum": 8192 },
+            "observed": { "type": "integer", "minimum": 1, "maximum": 8192 },
+            "passed": { "type": "boolean" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "expected", "observed", "passed"],
+          "properties": {
+            "id": { "const": "height" },
+            "expected": { "type": "integer", "minimum": 1, "maximum": 8192 },
+            "observed": { "type": "integer", "minimum": 1, "maximum": 8192 },
+            "passed": { "type": "boolean" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "expected", "observed", "passed"],
+          "properties": {
+            "id": { "const": "alpha" },
+            "expected": { "enum": ["any", "present", "absent"] },
+            "observed": { "enum": ["present", "absent"] },
+            "passed": { "type": "boolean" }
+          }
+        }
+      ],
+      "items": false
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "openadam.conformance-suite.v0.2",
+  "capabilityId": "org.openadam.projective.transform",
+  "capabilityVersion": "0.1.0",
+  "claimLevel": "L0",
+  "cases": [
+    {
+      "id": "inspect-identity-plane",
+      "operationId": "inspect",
+      "description": "Solves one explicit rectangular plane without guessing corner order.",
+      "input": {
+        "spec": {
+          "schema": "projective.transform",
+          "version": "0.1",
+          "destination": { "space": "pixel", "reference": { "width": 10, "height": 10 }, "quad": { "tl": { "x": 0, "y": 0 }, "tr": { "x": 10, "y": 0 }, "br": { "x": 10, "y": 10 }, "bl": { "x": 0, "y": 10 } } },
+          "content": { "fit": "stretch" }
+        }
+      },
+      "expect": {
+        "outcome": "success",
+        "match": "subset",
+        "value": { "bounds": { "x": 0, "y": 0, "width": 10, "height": 10 }, "geometry": { "orientation": "clockwise-screen", "signed_area": 100, "edge_lengths": [10, 10, 10, 10] } }
+      }
+    },
+    {
+      "id": "reject-self-intersection",
+      "operationId": "inspect",
+      "description": "Rejects a bow-tie quad rather than reordering its corners.",
+      "input": {
+        "spec": {
+          "schema": "projective.transform",
+          "version": "0.1",
+          "destination": { "space": "pixel", "reference": { "width": 10, "height": 10 }, "quad": { "tl": { "x": 0, "y": 0 }, "tr": { "x": 10, "y": 10 }, "br": { "x": 10, "y": 0 }, "bl": { "x": 0, "y": 10 } } },
+          "content": { "fit": "stretch" }
+        }
+      },
+      "expect": { "outcome": "error", "code": "INVALID_GEOMETRY" }
+    },
+    {
+      "id": "render-missing-source",
+      "operationId": "render",
+      "description": "Reports the stable missing-source error before invoking the renderer.",
+      "input": {
+        "source": "capabilities/fixtures/missing.png",
+        "output": "capabilities/fixtures/out.png",
+        "spec": {
+          "schema": "projective.transform",
+          "version": "0.1",
+          "destination": { "space": "pixel", "reference": { "width": 10, "height": 10 }, "quad": { "tl": { "x": 0, "y": 0 }, "tr": { "x": 10, "y": 0 }, "br": { "x": 10, "y": 10 }, "bl": { "x": 0, "y": 10 } } },
+          "content": { "fit": "stretch" }
+        }
+      },
+      "expect": { "outcome": "error", "code": "SOURCE_NOT_FOUND" }
+    }
+  ]
+}

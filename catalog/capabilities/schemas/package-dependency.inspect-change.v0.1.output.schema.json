@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "dependency", "changeState", "changed", "before", "after"],
+  "properties": {
+    "status": { "const": "ok" },
+    "dependency": { "type": "string" },
+    "changeState": { "enum": ["proposed", "applied"] },
+    "changed": { "type": "boolean" },
+    "before": { "$ref": "#/$defs/side" },
+    "after": { "$ref": "#/$defs/side" }
+  },
+  "$defs": {
+    "side": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["spec", "mode"],
+          "properties": {
+            "spec": { "type": "string", "minLength": 1, "maxLength": 300 },
+            "mode": { "enum": ["registry-range", "registry-exact", "file", "workspace", "git", "url", "alias", "tag", "other"] }
+          }
+        }
+      ]
+    }
+  }
+}
+

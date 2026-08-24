@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "openadam.capability-profile.v0.3",
+  "id": "org.openadam.structured-data.analyze",
+  "version": "0.1.0",
+  "title": "Inspect and validate structured data",
+  "summary": "Read bounded local JSON, JSONL, CSV, TSV, YAML, or Parquet data to describe its shape or evaluate explicit deterministic constraints without rewriting it.",
+  "lifecycle": "experimental",
+  "operations": [
+    {
+      "id": "inspect",
+      "title": "Inspect structured data",
+      "description": "Return source format and byte count, bounded record-set and field profiles, and a small deterministic sample. This operation describes records inside a data source; it does not identify the broader file envelope or transform the data.",
+      "semantics": {
+        "resultVariability": "deterministic",
+        "contextSources": ["referenced-resource"],
+        "stateAccess": "read",
+        "idempotency": "idempotent",
+        "openWorld": false,
+        "ambiguity": "return-candidates",
+        "provenance": "not-applicable"
+      },
+      "inputSchema": { "$ref": "./schemas/structured-data.inspect.v0.1.input.schema.json" },
+      "outputSchema": { "$ref": "./schemas/structured-data.inspect.v0.1.output.schema.json" },
+      "errors": [
+        { "code": "INVALID_INPUT", "description": "The source or option shape is outside the portable contract.", "retryable": false },
+        { "code": "SOURCE_NOT_FOUND", "description": "The named local source does not exist.", "retryable": false },
+        { "code": "PATH_FORBIDDEN", "description": "The source path escapes or violates the explicit workspace grant.", "retryable": false },
+        { "code": "FORMAT_UNSUPPORTED", "description": "The source format is not supported or cannot be determined.", "retryable": false },
+        { "code": "PARSE_FAILED", "description": "The source does not satisfy the declared structured-data syntax.", "retryable": false },
+        { "code": "LIMIT_EXCEEDED", "description": "The read, parse, shape, sample, or response exceeded a declared bound.", "retryable": false },
+        { "code": "PROVIDER_FAILED", "description": "The provider could not safely complete the operation.", "retryable": true }
+      ]
+    },
+    {
+      "id": "validate",
+      "title": "Validate structured data",
+      "description": "Evaluate an explicit JSON Schema, deterministic assertions, or both against a bounded local structured-data source. Constraint failures are successful validation results with valid=false; malformed constraints are errors.",
+      "semantics": {
+        "resultVariability": "deterministic",
+        "contextSources": ["referenced-resource"],
+        "stateAccess": "read",
+        "idempotency": "idempotent",
+        "openWorld": false,
+        "ambiguity": "reject",
+        "provenance": "not-applicable"
+      },
+      "inputSchema": { "$ref": "./schemas/structured-data.validate.v0.1.input.schema.json" },
+      "outputSchema": { "$ref": "./schemas/structured-data.validate.v0.1.output.schema.json" },
+      "errors": [
+        { "code": "INVALID_INPUT", "description": "The source or option shape is outside the portable contract.", "retryable": false },
+        { "code": "VALIDATION_INVALID", "description": "No constraint was supplied or a JSON Schema or assertion is malformed.", "retryable": false },
+        { "code": "SOURCE_NOT_FOUND", "description": "The named local source does not exist.", "retryable": false },
+        { "code": "PATH_FORBIDDEN", "description": "The source path escapes or violates the explicit workspace grant.", "retryable": false },
+        { "code": "FORMAT_UNSUPPORTED", "description": "The source format is not supported or cannot be determined.", "retryable": false },
+        { "code": "PARSE_FAILED", "description": "The source does not satisfy the declared structured-data syntax.", "retryable": false },
+        { "code": "LIMIT_EXCEEDED", "description": "The read, validation, sample, or response exceeded a declared bound.", "retryable": false },
+        { "code": "PROVIDER_FAILED", "description": "The provider could not safely complete the operation.", "retryable": true }
+      ]
+    }
+  ]
+}

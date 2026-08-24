@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "openadam.conformance-suite.v0.2",
+  "capabilityId": "org.openadam.raster.prepare",
+  "capabilityVersion": "0.1.0",
+  "claimLevel": "L0",
+  "cases": [
+    {
+      "id": "trim-alpha-bounds",
+      "operationId": "trim-transparent",
+      "description": "Trims to the alpha bounds plus explicit padding and writes a portable PNG.",
+      "input": { "source": "fixtures/padded.xpm", "output": "conformance-output/trimmed.png", "padding": 1, "overwrite": true },
+      "expect": {
+        "outcome": "success",
+        "match": "subset",
+        "value": { "status": "ok", "source": { "width": 8, "height": 8 }, "output": { "path": "conformance-output/trimmed.png", "format": "png", "width": 6, "height": 6 }, "trim_box": { "left": 1, "top": 1, "right": 7, "bottom": 7 } }
+      }
+    },
+    {
+      "id": "resize-explicit-dimensions",
+      "operationId": "resize",
+      "description": "Produces exact dimensions with the declared contain semantics.",
+      "input": { "source": "fixtures/padded.xpm", "output": "conformance-output/resized.png", "width": 12, "height": 6, "fit": "contain", "overwrite": true },
+      "expect": { "outcome": "success", "match": "subset", "value": { "status": "ok", "output": { "path": "conformance-output/resized.png", "width": 12, "height": 6 }, "fit": "contain" } }
+    },
+    {
+      "id": "place-bottom-right-mark",
+      "operationId": "apply-brand-mark",
+      "description": "Uses the portable anchor and margin contract for exact placement.",
+      "input": { "source": "fixtures/padded.xpm", "mark": "fixtures/mark.xpm", "output": "conformance-output/marked.png", "anchor": "bottom-right", "margin_x": 1, "margin_y": 1, "max_width_ratio": 0.5, "overwrite": true },
+      "expect": { "outcome": "success", "match": "subset", "value": { "status": "ok", "placement": { "anchor": "bottom-right", "x": 3, "y": 5, "width": 4, "height": 2, "margin_x": 1, "margin_y": 1 } } }
+    },
+    {
+      "id": "reject-empty-alpha",
+      "operationId": "trim-transparent",
+      "description": "Reports the stable empty-alpha error without writing an output.",
+      "input": { "source": "fixtures/transparent.xpm", "output": "conformance-output/empty.png", "overwrite": true },
+      "expect": { "outcome": "error", "code": "EMPTY_ALPHA" }
+    },
+    {
+      "id": "protect-existing-output",
+      "operationId": "resize",
+      "description": "Refuses to replace the output produced by the prior resize case unless overwrite is explicit.",
+      "input": { "source": "fixtures/padded.xpm", "output": "conformance-output/resized.png", "width": 12, "height": 6, "fit": "contain" },
+      "expect": { "outcome": "error", "code": "OUTPUT_EXISTS" }
+    }
+  ]
+}

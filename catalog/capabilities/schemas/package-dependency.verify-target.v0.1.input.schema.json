@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["dependency", "afterSpec", "packagePresent", "resolvedVersion"],
+  "properties": {
+    "dependency": { "type": "string", "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$", "maxLength": 214 },
+    "afterSpec": { "type": "string", "minLength": 1, "maxLength": 300 },
+    "packagePresent": { "type": "boolean" },
+    "resolvedVersion": { "type": ["string", "null"], "minLength": 1, "maxLength": 100 }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "packagePresent": { "const": false } }, "required": ["packagePresent"] },
+      "then": { "properties": { "resolvedVersion": { "const": null } } }
+    }
+  ]
+}

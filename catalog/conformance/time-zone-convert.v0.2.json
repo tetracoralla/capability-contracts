@@ -1,0 +1,138 @@
+{
+  "schemaVersion": "openadam.conformance-suite.v0.2",
+  "capabilityId": "org.openadam.time-zone.convert",
+  "capabilityVersion": "0.2.0",
+  "claimLevel": "L0",
+  "cases": [
+    {
+      "id": "beijing-to-pacific-and-uk",
+      "operationId": "convert",
+      "description": "A fixed summer instant uses the correct daylight-saving abbreviations and preserves target order.",
+      "input": {
+        "localDateTime": "2026-08-03T16:30",
+        "sourceTimeZone": "Asia/Shanghai",
+        "targetTimeZones": ["America/Los_Angeles", "Europe/London"]
+      },
+      "expect": {
+        "outcome": "success",
+        "match": "subset",
+        "value": {
+          "status": "converted",
+          "source": {
+            "localDateTime": "2026-08-03T16:30",
+            "timeZone": "Asia/Shanghai"
+          },
+          "instant": "2026-08-03T08:30:00Z",
+          "results": [
+            {
+              "localDateTime": "2026-08-03T01:30",
+              "timeZone": "America/Los_Angeles",
+              "offset": "-07:00"
+            },
+            {
+              "localDateTime": "2026-08-03T09:30",
+              "timeZone": "Europe/London",
+              "offset": "+01:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "new-york-fall-back-ambiguity",
+      "operationId": "convert",
+      "description": "A repeated New York wall time returns both occurrences instead of guessing.",
+      "input": {
+        "localDateTime": "2026-11-01T01:30",
+        "sourceTimeZone": "America/New_York",
+        "targetTimeZones": ["Asia/Shanghai"]
+      },
+      "expect": {
+        "outcome": "success",
+        "match": "subset",
+        "value": {
+          "status": "ambiguous",
+          "source": {
+            "localDateTime": "2026-11-01T01:30",
+            "timeZone": "America/New_York"
+          },
+          "candidates": [
+            {
+              "choice": "earlier",
+              "instant": "2026-11-01T05:30:00Z",
+              "sourceOffset": "-04:00"
+            },
+            {
+              "choice": "later",
+              "instant": "2026-11-01T06:30:00Z",
+              "sourceOffset": "-05:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "new-york-spring-gap",
+      "operationId": "convert",
+      "description": "A nonexistent daylight-saving wall time is reported and never shifted to another instant.",
+      "input": {
+        "localDateTime": "2026-03-08T02:30",
+        "sourceTimeZone": "America/New_York",
+        "targetTimeZones": ["Asia/Shanghai"]
+      },
+      "expect": {
+        "outcome": "success",
+        "match": "subset",
+        "value": {
+          "status": "nonexistent",
+          "source": {
+            "localDateTime": "2026-03-08T02:30",
+            "timeZone": "America/New_York"
+          }
+        }
+      }
+    },
+    {
+      "id": "reject-ambiguous-zone-abbreviation",
+      "operationId": "convert",
+      "description": "A syntactically named but unknown zone is rejected with the stable profile error.",
+      "input": {
+        "localDateTime": "2026-08-03T16:30",
+        "sourceTimeZone": "Mars/Olympus",
+        "targetTimeZones": ["Asia/Shanghai"]
+      },
+      "expect": {
+        "outcome": "error",
+        "code": "UNKNOWN_TIME_ZONE"
+      }
+    },
+    {
+      "id": "reject-provider-year-boundary",
+      "operationId": "convert",
+      "description": "A provider reports its explicit supported-year boundary instead of guessing historical data.",
+      "input": {
+        "localDateTime": "1900-12-31T12:00",
+        "sourceTimeZone": "Asia/Shanghai",
+        "targetTimeZones": ["Europe/London"]
+      },
+      "expect": {
+        "outcome": "error",
+        "code": "UNSUPPORTED_YEAR"
+      }
+    },
+    {
+      "id": "reject-sub-minute-historical-offset",
+      "operationId": "convert",
+      "description": "A historical sub-minute UTC offset is rejected rather than rounded into the Profile's minute-level result.",
+      "input": {
+        "localDateTime": "1971-01-01T12:00",
+        "sourceTimeZone": "Africa/Monrovia",
+        "targetTimeZones": ["UTC"]
+      },
+      "expect": {
+        "outcome": "error",
+        "code": "UNSUPPORTED_PRECISION"
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:openadam:capability:raster.apply-brand-mark:v0.1:input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["source", "mark", "output"],
+  "properties": {
+    "source": { "type": "string", "minLength": 1, "maxLength": 4096 },
+    "mark": { "type": "string", "minLength": 1, "maxLength": 4096 },
+    "output": { "type": "string", "minLength": 1, "maxLength": 4096, "pattern": "\\.[Pp][Nn][Gg]$" },
+    "anchor": { "enum": ["top-left", "top-center", "top-right", "center-left", "center", "center-right", "bottom-left", "bottom-center", "bottom-right"], "default": "bottom-right" },
+    "margin_x": { "type": "integer", "minimum": 0, "maximum": 8192, "default": 32 },
+    "margin_y": { "type": "integer", "minimum": 0, "maximum": 8192, "default": 32 },
+    "opacity": { "type": "number", "minimum": 0, "maximum": 1, "default": 1 },
+    "max_width_ratio": { "type": "number", "exclusiveMinimum": 0, "maximum": 1, "default": 0.25 },
+    "overwrite": { "type": "boolean", "default": false }
+  }
+}

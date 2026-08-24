@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "openadam.conformance-suite.v0.2",
+  "capabilityId": "org.openadam.raster.verify",
+  "capabilityVersion": "0.1.0",
+  "claimLevel": "L0",
+  "cases": [
+    {
+      "id": "verify-exact-raster-facts",
+      "operationId": "verify",
+      "description": "Returns an ordered pass result when all explicit technical expectations match.",
+      "input": {
+        "source": "fixtures/padded.xpm",
+        "expected": { "format": "xpm", "width": 8, "height": 8, "alpha": "present" }
+      },
+      "expect": {
+        "outcome": "success",
+        "match": "exact",
+        "value": {
+          "status": "pass",
+          "source": "fixtures/padded.xpm",
+          "observed": { "format": "xpm", "width": 8, "height": 8, "alpha": "present" },
+          "checks": [
+            { "id": "format", "expected": "xpm", "observed": "xpm", "passed": true },
+            { "id": "width", "expected": 8, "observed": 8, "passed": true },
+            { "id": "height", "expected": 8, "observed": 8, "passed": true },
+            { "id": "alpha", "expected": "present", "observed": "present", "passed": true }
+          ]
+        }
+      }
+    },
+    {
+      "id": "report-objective-mismatches",
+      "operationId": "verify",
+      "description": "Returns a normal fail result with every mismatch instead of raising an execution error.",
+      "input": {
+        "source": "fixtures/padded.xpm",
+        "expected": { "format": "png", "width": 12, "height": 8, "alpha": "absent" }
+      },
+      "expect": {
+        "outcome": "success",
+        "match": "exact",
+        "value": {
+          "status": "fail",
+          "source": "fixtures/padded.xpm",
+          "observed": { "format": "xpm", "width": 8, "height": 8, "alpha": "present" },
+          "checks": [
+            { "id": "format", "expected": "png", "observed": "xpm", "passed": false },
+            { "id": "width", "expected": 12, "observed": 8, "passed": false },
+            { "id": "height", "expected": 8, "observed": 8, "passed": true },
+            { "id": "alpha", "expected": "absent", "observed": "present", "passed": false }
+          ]
+        }
+      }
+    },
+    {
+      "id": "reject-missing-raster",
+      "operationId": "verify",
+      "description": "Reports a stable source error instead of a failed technical check when no raster can be inspected.",
+      "input": {
+        "source": "fixtures/missing.png",
+        "expected": { "format": "png", "width": 12, "height": 8, "alpha": "any" }
+      },
+      "expect": { "outcome": "error", "code": "SOURCE_NOT_FOUND" }
+    }
+  ]
+}

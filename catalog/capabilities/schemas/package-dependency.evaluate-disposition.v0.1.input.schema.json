@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["changeState", "changed", "targetVerification", "surfaceVerification", "lockfileVerification", "consumerVerification"],
+  "properties": {
+    "changeState": { "enum": ["proposed", "applied"] },
+    "changed": { "type": "boolean" },
+    "targetVerification": { "enum": ["verified", "failed", "unverified"] },
+    "surfaceVerification": { "enum": ["verified", "failed"] },
+    "lockfileVerification": { "enum": ["verified", "failed"] },
+    "consumerVerification": { "enum": ["verified", "failed", "unverified"] }
+  }
+}
+

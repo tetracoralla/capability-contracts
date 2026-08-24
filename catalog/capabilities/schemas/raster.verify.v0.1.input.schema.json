@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:openadam:capability:raster.verify:v0.1:input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["source", "expected"],
+  "properties": {
+    "source": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "description": "Relative path to one raster inside the explicit workspace grant."
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "width", "height", "alpha"],
+      "properties": {
+        "format": { "enum": ["png", "jpeg", "gif", "webp", "xpm"] },
+        "width": { "type": "integer", "minimum": 1, "maximum": 8192 },
+        "height": { "type": "integer", "minimum": 1, "maximum": 8192 },
+        "alpha": { "enum": ["any", "present", "absent"] }
+      }
+    }
+  }
+}

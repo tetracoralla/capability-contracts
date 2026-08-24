@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["dependency", "beforeSpec", "afterSpec", "changeState"],
+  "properties": {
+    "dependency": { "$ref": "#/$defs/dependency" },
+    "beforeSpec": { "$ref": "#/$defs/nullableSpec" },
+    "afterSpec": { "$ref": "#/$defs/spec" },
+    "changeState": { "enum": ["proposed", "applied"] }
+  },
+  "$defs": {
+    "dependency": { "type": "string", "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$", "maxLength": 214 },
+    "spec": { "type": "string", "minLength": 1, "maxLength": 300 },
+    "nullableSpec": { "type": ["string", "null"], "minLength": 1, "maxLength": 300 }
+  }
+}

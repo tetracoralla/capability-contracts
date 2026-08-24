@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "checkId", "verification", "reasonCode"],
+  "properties": {
+    "status": { "const": "ok" },
+    "checkId": { "type": "string" },
+    "verification": { "enum": ["verified", "failed", "unverified"] },
+    "reasonCode": { "enum": ["NONE", "CHECK_FAILED", "CHECK_UNAVAILABLE"] }
+  }
+}
+

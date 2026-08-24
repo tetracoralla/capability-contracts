@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "openadam.capability-profile.v0.3",
+  "id": "org.openadam.file.inspect",
+  "version": "0.1.0",
+  "title": "Inspect a local file envelope",
+  "summary": "Identify and characterize one local file before a downstream tool acts, while preserving uncertainty, routing traits, integrity, and probe evidence.",
+  "lifecycle": "experimental",
+  "operations": [
+    {
+      "id": "inspect",
+      "title": "Inspect file",
+      "description": "Read one regular file inside an explicitly granted workspace and return bounded identity, integrity, routing, structured-data, image, diagnostics, provenance, and enforced-limit facts. Signature evidence outranks the filename extension. The operation does not extract document content, transform the file, or authorize a downstream action.",
+      "semantics": {
+        "resultVariability": "deterministic",
+        "contextSources": ["referenced-resource"],
+        "stateAccess": "read",
+        "idempotency": "idempotent",
+        "openWorld": false,
+        "ambiguity": "return-candidates",
+        "provenance": "required"
+      },
+      "inputSchema": { "$ref": "./schemas/file.inspect.v0.1.input.schema.json" },
+      "outputSchema": { "$ref": "./schemas/file.inspect.v0.1.output.schema.json" },
+      "errors": [
+        {
+          "code": "INVALID_INPUT",
+          "description": "The request shape or inspection option is outside the portable contract.",
+          "retryable": false
+        },
+        {
+          "code": "FILE_NOT_FOUND",
+          "description": "The named file does not exist inside the granted workspace.",
+          "retryable": false
+        },
+        {
+          "code": "PATH_FORBIDDEN",
+          "description": "The path is absolute, traverses outside the grant, is URI-like, contains a symlink, or is not a regular file.",
+          "retryable": false
+        },
+        {
+          "code": "LIMIT_EXCEEDED",
+          "description": "The inspection exceeded a declared time, memory, input, or response limit.",
+          "retryable": false
+        },
+        {
+          "code": "INSPECTION_FAILED",
+          "description": "The provider could not safely complete the inspection.",
+          "retryable": true
+        }
+      ]
+    }
+  ]
+}

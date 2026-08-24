@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "openadam.capability-profile.v0.3",
+  "id": "org.openadam.raster.verify",
+  "version": "0.1.0",
+  "title": "Verify raster requirements",
+  "summary": "Read one bounded raster and compare its format, dimensions, and alpha-channel presence with explicit technical expectations without judging visual quality.",
+  "lifecycle": "experimental",
+  "operations": [
+    {
+      "id": "verify",
+      "title": "Verify raster",
+      "description": "Return ordered objective checks for explicit format, width, height, and alpha-channel expectations. A mismatch is a successful fail result, not a provider error.",
+      "semantics": {
+        "resultVariability": "deterministic",
+        "contextSources": ["referenced-resource"],
+        "stateAccess": "read",
+        "idempotency": "idempotent",
+        "openWorld": false,
+        "ambiguity": "reject",
+        "provenance": "not-applicable"
+      },
+      "inputSchema": { "$ref": "./schemas/raster.verify.v0.1.input.schema.json" },
+      "outputSchema": { "$ref": "./schemas/raster.verify.v0.1.output.schema.json" },
+      "errors": [
+        { "code": "INVALID_INPUT", "description": "The path or expectation shape is outside the portable contract.", "retryable": false },
+        { "code": "SOURCE_NOT_FOUND", "description": "The named raster does not exist.", "retryable": false },
+        { "code": "PATH_FORBIDDEN", "description": "The path escapes or violates the explicit workspace grant.", "retryable": false },
+        { "code": "IMAGE_INVALID", "description": "The source is not a supported safe raster.", "retryable": false },
+        { "code": "LIMIT_EXCEEDED", "description": "An input size, dimension, pixel, or execution bound was exceeded.", "retryable": false },
+        { "code": "PROVIDER_FAILED", "description": "The provider could not safely complete verification.", "retryable": true }
+      ]
+    }
+  ]
+}

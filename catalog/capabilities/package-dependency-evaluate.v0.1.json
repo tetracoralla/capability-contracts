@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "openadam.capability-profile.v0.3",
+  "id": "org.openadam.package-dependency.evaluate",
+  "version": "0.1.0",
+  "title": "Evaluate package dependency change evidence",
+  "summary": "Deterministically classify a package dependency change and evaluate explicit installed-target, public-surface, lockfile, and consumer-check evidence before deriving a land, blocked, or revert disposition.",
+  "lifecycle": "experimental",
+  "operations": [
+    {
+      "id": "inspect-change",
+      "title": "Inspect dependency change",
+      "description": "Classify the before and after package specifications and report whether the requested dependency source or version constraint changed.",
+      "semantics": {
+        "resultVariability": "deterministic",
+        "contextSources": [],
+        "stateAccess": "none",
+        "idempotency": "idempotent",
+        "openWorld": false,
+        "ambiguity": "not-applicable",
+        "provenance": "not-applicable"
+      },
+      "inputSchema": { "$ref": "./schemas/package-dependency.inspect-change.v0.1.input.schema.json" },
+      "outputSchema": { "$ref": "./schemas/package-dependency.inspect-change.v0.1.output.schema.json" },
+      "errors": []
+    },
+    {
+      "id": "verify-target",
+      "title": "Verify installed target",
+      "description": "Evaluate explicit package-presence and resolved-version evidence against the requested registry specification. Non-registry specifications remain unverified rather than being guessed.",
+      "semantics": {
+        "resultVariability": "deterministic",
+        "contextSources": [],
+        "stateAccess": "none",
+        "idempotency": "idempotent",
+        "openWorld": false,
+        "ambiguity": "not-applicable",
+        "provenance": "not-applicable"
+      },
+      "inputSchema": { "$ref": "./schemas/package-dependency.verify-target.v0.1.input.schema.json" },
+      "outputSchema": { "$ref": "./schemas/package-dependency.verify-target.v0.1.output.schema.json" },
+      "errors": []
+    },
+    {
+      "id": "verify-surface",
+      "title": "Verify required package surface",
+      "description": "Compare explicit required public paths with the package paths observed by the caller and return the deterministic missing set.",
+      "semantics": {
+        "resultVariability": "deterministic",
+        "contextSources": [],
+        "stateAccess": "none",
+        "idempotency": "idempotent",
+        "openWorld": false,
+        "ambiguity": "not-applicable",
+        "provenance": "not-applicable"
+      },
+      "inputSchema": { "$ref": "./schemas/package-dependency.verify-surface.v0.1.input.schema.json" },
+      "outputSchema": { "$ref": "./schemas/package-dependency.verify-surface.v0.1.output.schema.json" },
+      "errors": []
+    },
+    {
+      "id": "verify-lockfile",
+      "title": "Verify lockfile alignment",
+      "description": "Check that the root dependency specification and locked version both align with the requested registry specification.",
+      "semantics": {
+        "resultVariability": "deterministic",
+        "contextSources": [],
+        "stateAccess": "none",
+        "idempotency": "idempotent",
+        "openWorld": false,
+        "ambiguity": "not-applicable",
+        "provenance": "not-applicable"
+      },
+      "inputSchema": { "$ref": "./schemas/package-dependency.verify-lockfile.v0.1.input.schema.json" },
+      "outputSchema": { "$ref": "./schemas/package-dependency.verify-lockfile.v0.1.output.schema.json" },
+      "errors": []
+    },
+    {
+      "id": "assess-consumer-check",
+      "title": "Assess consumer check evidence",
+      "description": "Map an explicitly identified consumer check outcome to verified, failed, or unverified without inferring that any command ran.",
+      "semantics": {
+        "resultVariability": "deterministic",
+        "contextSources": [],
+        "stateAccess": "none",
+        "idempotency": "idempotent",
+        "openWorld": false,
+        "ambiguity": "not-applicable",
+        "provenance": "not-applicable"
+      },
+      "inputSchema": { "$ref": "./schemas/package-dependency.assess-consumer-check.v0.1.input.schema.json" },
+      "outputSchema": { "$ref": "./schemas/package-dependency.assess-consumer-check.v0.1.output.schema.json" },
+      "errors": []
+    },
+    {
+      "id": "evaluate-disposition",
+      "title": "Evaluate dependency disposition",
+      "description": "Derive stable ordered blockers and return land only when a real change and all required evidence are verified; otherwise block a proposal or revert an applied change.",
+      "semantics": {
+        "resultVariability": "deterministic",
+        "contextSources": [],
+        "stateAccess": "none",
+        "idempotency": "idempotent",
+        "openWorld": false,
+        "ambiguity": "not-applicable",
+        "provenance": "not-applicable"
+      },
+      "inputSchema": { "$ref": "./schemas/package-dependency.evaluate-disposition.v0.1.input.schema.json" },
+      "outputSchema": { "$ref": "./schemas/package-dependency.evaluate-disposition.v0.1.output.schema.json" },
+      "errors": []
+    }
+  ]
+}

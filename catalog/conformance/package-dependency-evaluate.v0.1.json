@@ -1,0 +1,126 @@
+{
+  "schemaVersion": "openadam.conformance-suite.v0.2",
+  "capabilityId": "org.openadam.package-dependency.evaluate",
+  "capabilityVersion": "0.1.0",
+  "claimLevel": "L1",
+  "cases": [
+    {
+      "id": "inspect-range-change",
+      "operationId": "inspect-change",
+      "description": "A proposed registry range update is classified as a real change.",
+      "facets": ["normal"],
+      "input": { "dependency": "ajv", "beforeSpec": "^8.17.1", "afterSpec": "^8.20.0", "changeState": "proposed" },
+      "expect": {
+        "outcome": "success",
+        "match": "exact",
+        "value": {
+          "status": "ok", "dependency": "ajv", "changeState": "proposed", "changed": true,
+          "before": { "spec": "^8.17.1", "mode": "registry-range" },
+          "after": { "spec": "^8.20.0", "mode": "registry-range" }
+        }
+      }
+    },
+    {
+      "id": "inspect-new-tag-without-change",
+      "operationId": "inspect-change",
+      "description": "An absent prior dependency and a repeated tag specification exercise classification and the no-change boundary.",
+      "facets": ["boundary"],
+      "input": { "dependency": "example", "beforeSpec": "latest", "afterSpec": "latest", "changeState": "applied" },
+      "expect": {
+        "outcome": "success",
+        "match": "exact",
+        "value": {
+          "status": "ok", "dependency": "example", "changeState": "applied", "changed": false,
+          "before": { "spec": "latest", "mode": "tag" },
+          "after": { "spec": "latest", "mode": "tag" }
+        }
+      }
+    },
+    {
+      "id": "target-matches-range",
+      "operationId": "verify-target",
+      "description": "A present installed version satisfying the requested registry range verifies.",
+      "facets": ["normal"],
+      "input": { "dependency": "ajv", "afterSpec": "^8.20.0", "packagePresent": true, "resolvedVersion": "8.20.0" },
+      "expect": {
+        "outcome": "success", "match": "exact",
+        "value": { "status": "ok", "dependency": "ajv", "requestedSpec": "^8.20.0", "requestedMode": "registry-range", "resolvedVersion": "8.20.0", "verification": "verified", "reasonCode": "NONE" }
+      }
+    },
+    {
+      "id": "target-file-spec-unverified",
+      "operationId": "verify-target",
+      "description": "A non-registry target remains unverified even when a package and version are reported.",
+      "facets": ["boundary"],
+      "input": { "dependency": "example", "afterSpec": "file:../example", "packagePresent": true, "resolvedVersion": "1.0.0" },
+      "expect": {
+        "outcome": "success", "match": "exact",
+        "value": { "status": "ok", "dependency": "example", "requestedSpec": "file:../example", "requestedMode": "file", "resolvedVersion": "1.0.0", "verification": "unverified", "reasonCode": "UNSUPPORTED_TARGET_SPEC" }
+      }
+    },
+    {
+      "id": "surface-complete",
+      "operationId": "verify-surface",
+      "description": "All explicitly required package paths are available regardless of extra paths.",
+      "facets": ["normal"],
+      "input": { "dependency": "ajv", "requiredPaths": ["dist/2020.js"], "availablePaths": ["dist/2020.js", "package.json"] },
+      "expect": { "outcome": "success", "match": "exact", "value": { "status": "ok", "dependency": "ajv", "verification": "verified", "requiredCount": 1, "missingPaths": [] } }
+    },
+    {
+      "id": "surface-missing-sorted",
+      "operationId": "verify-surface",
+      "description": "Missing required paths are unique and returned in stable lexical order.",
+      "facets": ["boundary"],
+      "input": { "dependency": "ajv", "requiredPaths": ["dist/jtd.js", "dist/2020.js"], "availablePaths": [] },
+      "expect": { "outcome": "success", "match": "exact", "value": { "status": "ok", "dependency": "ajv", "verification": "failed", "requiredCount": 2, "missingPaths": ["dist/2020.js", "dist/jtd.js"] } }
+    },
+    {
+      "id": "lockfile-aligned",
+      "operationId": "verify-lockfile",
+      "description": "Matching root specification and satisfying locked version verify.",
+      "facets": ["normal"],
+      "input": { "dependency": "ajv", "afterSpec": "^8.20.0", "rootSpec": "^8.20.0", "lockedVersion": "8.20.0" },
+      "expect": { "outcome": "success", "match": "exact", "value": { "status": "ok", "dependency": "ajv", "verification": "verified", "rootSpecMatches": true, "lockedVersionMatches": true, "reasonCodes": [] } }
+    },
+    {
+      "id": "lockfile-evidence-missing",
+      "operationId": "verify-lockfile",
+      "description": "Missing root and locked evidence fail with both stable reason codes.",
+      "facets": ["boundary"],
+      "input": { "dependency": "ajv", "afterSpec": "^8.20.0", "rootSpec": null, "lockedVersion": null },
+      "expect": { "outcome": "success", "match": "exact", "value": { "status": "ok", "dependency": "ajv", "verification": "failed", "rootSpecMatches": false, "lockedVersionMatches": false, "reasonCodes": ["ROOT_SPEC_MISSING", "LOCKED_VERSION_MISSING"] } }
+    },
+    {
+      "id": "consumer-check-passed",
+      "operationId": "assess-consumer-check",
+      "description": "An explicitly passed consumer check verifies.",
+      "facets": ["normal"],
+      "input": { "checkId": "npm-test", "status": "passed" },
+      "expect": { "outcome": "success", "match": "exact", "value": { "status": "ok", "checkId": "npm-test", "verification": "verified", "reasonCode": "NONE" } }
+    },
+    {
+      "id": "consumer-check-unavailable",
+      "operationId": "assess-consumer-check",
+      "description": "Unavailable evidence remains unverified rather than passing by default.",
+      "facets": ["boundary"],
+      "input": { "checkId": "npm-test", "status": "unavailable" },
+      "expect": { "outcome": "success", "match": "exact", "value": { "status": "ok", "checkId": "npm-test", "verification": "unverified", "reasonCode": "CHECK_UNAVAILABLE" } }
+    },
+    {
+      "id": "disposition-land",
+      "operationId": "evaluate-disposition",
+      "description": "A real proposed change with every evidence channel verified may land.",
+      "facets": ["normal"],
+      "input": { "changeState": "proposed", "changed": true, "targetVerification": "verified", "surfaceVerification": "verified", "lockfileVerification": "verified", "consumerVerification": "verified" },
+      "expect": { "outcome": "success", "match": "exact", "value": { "status": "ok", "disposition": "land", "complete": true, "blockers": [] } }
+    },
+    {
+      "id": "disposition-applied-revert-order",
+      "operationId": "evaluate-disposition",
+      "description": "An applied unchanged dependency with failed and unverified evidence must revert with stable blocker order.",
+      "facets": ["boundary"],
+      "input": { "changeState": "applied", "changed": false, "targetVerification": "unverified", "surfaceVerification": "failed", "lockfileVerification": "failed", "consumerVerification": "failed" },
+      "expect": { "outcome": "success", "match": "exact", "value": { "status": "ok", "disposition": "revert", "complete": true, "blockers": ["NO_CHANGE", "TARGET_UNVERIFIED", "SURFACE_FAILED", "LOCKFILE_FAILED", "CONSUMER_FAILED"] } }
+    }
+  ]
+}

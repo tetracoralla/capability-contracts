@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "dependency", "verification", "rootSpecMatches", "lockedVersionMatches", "reasonCodes"],
+  "properties": {
+    "status": { "const": "ok" },
+    "dependency": { "type": "string" },
+    "verification": { "enum": ["verified", "failed"] },
+    "rootSpecMatches": { "type": "boolean" },
+    "lockedVersionMatches": { "type": "boolean" },
+    "reasonCodes": {
+      "type": "array",
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": { "enum": ["ROOT_SPEC_MISSING", "ROOT_SPEC_MISMATCH", "LOCKED_VERSION_MISSING", "LOCKED_VERSION_MISMATCH"] }
+    }
+  }
+}
+

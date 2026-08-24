@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:openadam:capability:raster.resize:v0.1:input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["source", "output", "width", "height"],
+  "properties": {
+    "source": { "type": "string", "minLength": 1, "maxLength": 4096 },
+    "output": { "type": "string", "minLength": 1, "maxLength": 4096, "pattern": "\\.[Pp][Nn][Gg]$" },
+    "width": { "type": "integer", "minimum": 1, "maximum": 8192 },
+    "height": { "type": "integer", "minimum": 1, "maximum": 8192 },
+    "fit": { "enum": ["contain", "cover", "stretch"], "default": "contain" },
+    "overwrite": { "type": "boolean", "default": false }
+  }
+}

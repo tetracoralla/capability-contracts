@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "dependency", "verification", "requiredCount", "missingPaths"],
+  "properties": {
+    "status": { "const": "ok" },
+    "dependency": { "type": "string" },
+    "verification": { "enum": ["verified", "failed"] },
+    "requiredCount": { "type": "integer", "minimum": 0, "maximum": 64 },
+    "missingPaths": { "type": "array", "maxItems": 64, "uniqueItems": true, "items": { "type": "string" } }
+  }
+}
+
