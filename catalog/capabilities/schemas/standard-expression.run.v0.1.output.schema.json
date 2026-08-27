@@ -1,0 +1,7066 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:openadam:capability:standard-expression.run:output:v0.1",
+  "title": "Canonical standard-expression result",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": false
+        },
+        "operation": {
+          "enum": [
+            "interpret",
+            "validate",
+            "normalize",
+            "query",
+            "convert",
+            "detect"
+          ]
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "dialect": {
+          "type": "string"
+        },
+        "diagnostics": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "contains": {
+            "type": "object",
+            "properties": {
+              "severity": {
+                "const": "error"
+              }
+            },
+            "required": [
+              "severity"
+            ]
+          }
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "diagnostics"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "detect"
+        },
+        "input": {
+          "type": "string"
+        },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string"
+              },
+              "dialect": {
+                "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "reason": {
+                "type": "string"
+              },
+              "supported": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "kind",
+              "confidence",
+              "reason",
+              "supported"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "resolved": {
+          "const": false
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "candidates",
+        "resolved",
+        "diagnostics"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "interpret"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "cidr"
+        },
+        "dialect": {
+          "enum": [
+            "cidr"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "family": {
+              "enum": [
+                "ipv4",
+                "ipv6"
+              ]
+            },
+            "network": {
+              "type": "string"
+            },
+            "prefix": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 128
+            },
+            "netmask": {
+              "type": "string"
+            },
+            "first_address": {
+              "type": "string"
+            },
+            "last_address": {
+              "type": "string"
+            },
+            "address_count": {
+              "type": "string",
+              "pattern": "^[1-9]\\d*$"
+            }
+          },
+          "required": [
+            "family",
+            "network",
+            "prefix",
+            "netmask",
+            "first_address",
+            "last_address",
+            "address_count"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "normalize"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "cidr"
+        },
+        "dialect": {
+          "enum": [
+            "cidr"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "family": {
+              "enum": [
+                "ipv4",
+                "ipv6"
+              ]
+            },
+            "network": {
+              "type": "string"
+            },
+            "prefix": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 128
+            },
+            "netmask": {
+              "type": "string"
+            },
+            "first_address": {
+              "type": "string"
+            },
+            "last_address": {
+              "type": "string"
+            },
+            "address_count": {
+              "type": "string",
+              "pattern": "^[1-9]\\d*$"
+            }
+          },
+          "required": [
+            "family",
+            "network",
+            "prefix",
+            "netmask",
+            "first_address",
+            "last_address",
+            "address_count"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "validate"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "cidr"
+        },
+        "dialect": {
+          "enum": [
+            "cidr"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "query"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "cidr"
+        },
+        "dialect": {
+          "enum": [
+            "cidr"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "query_name": {
+          "const": "contains"
+        },
+        "query_result": {
+          "type": "object",
+          "properties": {
+            "address": {
+              "type": "string"
+            },
+            "contains": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "address",
+            "contains"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "query_name",
+        "query_result"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "query"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "cidr"
+        },
+        "dialect": {
+          "enum": [
+            "cidr"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "query_name": {
+          "const": "overlaps"
+        },
+        "query_result": {
+          "type": "object",
+          "properties": {
+            "cidr": {
+              "type": "string"
+            },
+            "overlaps": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "cidr",
+            "overlaps"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "query_name",
+        "query_result"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "interpret"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "content_type"
+        },
+        "dialect": {
+          "enum": [
+            "http"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "media_type": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "subtype": {
+              "type": "string"
+            },
+            "suffix": {
+              "type": "string"
+            },
+            "parameters": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "media_type",
+            "type",
+            "subtype",
+            "parameters"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "normalize"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "content_type"
+        },
+        "dialect": {
+          "enum": [
+            "http"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "media_type": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "subtype": {
+              "type": "string"
+            },
+            "suffix": {
+              "type": "string"
+            },
+            "parameters": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "media_type",
+            "type",
+            "subtype",
+            "parameters"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "validate"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "content_type"
+        },
+        "dialect": {
+          "enum": [
+            "http"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "query"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "content_type"
+        },
+        "dialect": {
+          "enum": [
+            "http"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "query_name": {
+          "const": "parameter"
+        },
+        "query_result": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "present": {
+              "type": "boolean"
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "name",
+            "present",
+            "value"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "query_name",
+        "query_result"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "interpret"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "cron"
+        },
+        "dialect": {
+          "enum": [
+            "unix-5",
+            "github-actions"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "minute": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "any"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "set"
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "values"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "range"
+                    },
+                    "from": {
+                      "type": "integer"
+                    },
+                    "to": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "from",
+                    "to"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "hour": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "any"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "set"
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "values"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "range"
+                    },
+                    "from": {
+                      "type": "integer"
+                    },
+                    "to": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "from",
+                    "to"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "day_of_month": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "any"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "set"
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "values"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "range"
+                    },
+                    "from": {
+                      "type": "integer"
+                    },
+                    "to": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "from",
+                    "to"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "month": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "any"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "set"
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "values"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "range"
+                    },
+                    "from": {
+                      "type": "integer"
+                    },
+                    "to": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "from",
+                    "to"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "day_of_week": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "any"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "set"
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "values"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "range"
+                    },
+                    "from": {
+                      "type": "integer"
+                    },
+                    "to": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "from",
+                    "to"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "required": [
+            "minute",
+            "hour",
+            "day_of_month",
+            "month",
+            "day_of_week"
+          ],
+          "additionalProperties": false
+        },
+        "semantics": {
+          "type": "object",
+          "properties": {
+            "timezone": {
+              "type": "string"
+            },
+            "day_of_month_day_of_week_relation": {
+              "const": "or"
+            }
+          },
+          "required": [
+            "timezone",
+            "day_of_month_day_of_week_relation"
+          ],
+          "additionalProperties": false
+        },
+        "derived": {
+          "type": "object",
+          "properties": {
+            "human_description": {
+              "type": "string"
+            },
+            "next_occurrences": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "instant": {
+                    "type": "string"
+                  },
+                  "timezone": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "instant",
+                  "timezone"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 5
+            }
+          },
+          "minProperties": 1,
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "value",
+        "semantics"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "normalize"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "cron"
+        },
+        "dialect": {
+          "enum": [
+            "unix-5",
+            "github-actions"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "minute": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "any"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "set"
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "values"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "range"
+                    },
+                    "from": {
+                      "type": "integer"
+                    },
+                    "to": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "from",
+                    "to"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "hour": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "any"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "set"
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "values"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "range"
+                    },
+                    "from": {
+                      "type": "integer"
+                    },
+                    "to": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "from",
+                    "to"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "day_of_month": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "any"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "set"
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "values"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "range"
+                    },
+                    "from": {
+                      "type": "integer"
+                    },
+                    "to": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "from",
+                    "to"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "month": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "any"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "set"
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "values"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "range"
+                    },
+                    "from": {
+                      "type": "integer"
+                    },
+                    "to": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "from",
+                    "to"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "day_of_week": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "any"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "set"
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "values"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "const": "range"
+                    },
+                    "from": {
+                      "type": "integer"
+                    },
+                    "to": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "from",
+                    "to"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "required": [
+            "minute",
+            "hour",
+            "day_of_month",
+            "month",
+            "day_of_week"
+          ],
+          "additionalProperties": false
+        },
+        "semantics": {
+          "type": "object",
+          "properties": {
+            "timezone": {
+              "type": "string"
+            },
+            "day_of_month_day_of_week_relation": {
+              "const": "or"
+            }
+          },
+          "required": [
+            "timezone",
+            "day_of_month_day_of_week_relation"
+          ],
+          "additionalProperties": false
+        },
+        "derived": {
+          "type": "object",
+          "properties": {
+            "human_description": {
+              "type": "string"
+            },
+            "next_occurrences": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "instant": {
+                    "type": "string"
+                  },
+                  "timezone": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "instant",
+                  "timezone"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 5
+            }
+          },
+          "minProperties": 1,
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "value",
+        "semantics"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "validate"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "cron"
+        },
+        "dialect": {
+          "enum": [
+            "unix-5",
+            "github-actions"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "semantics": {
+          "type": "object",
+          "properties": {
+            "timezone": {
+              "type": "string"
+            },
+            "day_of_month_day_of_week_relation": {
+              "const": "or"
+            }
+          },
+          "required": [
+            "timezone",
+            "day_of_month_day_of_week_relation"
+          ],
+          "additionalProperties": false
+        },
+        "derived": {
+          "type": "object",
+          "properties": {
+            "human_description": {
+              "type": "string"
+            },
+            "next_occurrences": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "instant": {
+                    "type": "string"
+                  },
+                  "timezone": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "instant",
+                  "timezone"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 5
+            }
+          },
+          "minProperties": 1,
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "semantics"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "query"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "cron"
+        },
+        "dialect": {
+          "enum": [
+            "unix-5",
+            "github-actions"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "query_name": {
+          "const": "next_occurrences"
+        },
+        "query_result": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "instant": {
+                "type": "string"
+              },
+              "timezone": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "instant",
+              "timezone"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "query_name",
+        "query_result"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "query"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "cron"
+        },
+        "dialect": {
+          "enum": [
+            "unix-5",
+            "github-actions"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "query_name": {
+          "const": "matches"
+        },
+        "query_result": {
+          "type": "object",
+          "properties": {
+            "matches": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "matches"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "query_name",
+        "query_result"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "interpret"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "iso_duration"
+        },
+        "dialect": {
+          "enum": [
+            "iso8601-1"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "years": {
+              "type": "string",
+              "pattern": "^(?:0|[1-9]\\d*)(?:\\.\\d+)?$"
+            },
+            "months": {
+              "type": "string",
+              "pattern": "^(?:0|[1-9]\\d*)(?:\\.\\d+)?$"
+            },
+            "weeks": {
+              "type": "string",
+              "pattern": "^(?:0|[1-9]\\d*)(?:\\.\\d+)?$"
+            },
+            "days": {
+              "type": "string",
+              "pattern": "^(?:0|[1-9]\\d*)(?:\\.\\d+)?$"
+            },
+            "hours": {
+              "type": "string",
+              "pattern": "^(?:0|[1-9]\\d*)(?:\\.\\d+)?$"
+            },
+            "minutes": {
+              "type": "string",
+              "pattern": "^(?:0|[1-9]\\d*)(?:\\.\\d+)?$"
+            },
+            "seconds": {
+              "type": "string",
+              "pattern": "^(?:0|[1-9]\\d*)(?:\\.\\d+)?$"
+            }
+          },
+          "required": [
+            "years",
+            "months",
+            "weeks",
+            "days",
+            "hours",
+            "minutes",
+            "seconds"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "normalize"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "iso_duration"
+        },
+        "dialect": {
+          "enum": [
+            "iso8601-1"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "years": {
+              "type": "string",
+              "pattern": "^(?:0|[1-9]\\d*)(?:\\.\\d+)?$"
+            },
+            "months": {
+              "type": "string",
+              "pattern": "^(?:0|[1-9]\\d*)(?:\\.\\d+)?$"
+            },
+            "weeks": {
+              "type": "string",
+              "pattern": "^(?:0|[1-9]\\d*)(?:\\.\\d+)?$"
+            },
+            "days": {
+              "type": "string",
+              "pattern": "^(?:0|[1-9]\\d*)(?:\\.\\d+)?$"
+            },
+            "hours": {
+              "type": "string",
+              "pattern": "^(?:0|[1-9]\\d*)(?:\\.\\d+)?$"
+            },
+            "minutes": {
+              "type": "string",
+              "pattern": "^(?:0|[1-9]\\d*)(?:\\.\\d+)?$"
+            },
+            "seconds": {
+              "type": "string",
+              "pattern": "^(?:0|[1-9]\\d*)(?:\\.\\d+)?$"
+            }
+          },
+          "required": [
+            "years",
+            "months",
+            "weeks",
+            "days",
+            "hours",
+            "minutes",
+            "seconds"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "validate"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "iso_duration"
+        },
+        "dialect": {
+          "enum": [
+            "iso8601-1"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "interpret"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "rrule"
+        },
+        "dialect": {
+          "enum": [
+            "rfc5545"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "frequency": {
+              "enum": [
+                "YEARLY",
+                "MONTHLY",
+                "WEEKLY",
+                "DAILY",
+                "HOURLY",
+                "MINUTELY",
+                "SECONDLY"
+              ]
+            },
+            "interval": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "count": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "until": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(?:0[1-9]\\d{2}|[1-9]\\d{3})\\d{4}T\\d{6}Z$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "week_start": {
+              "enum": [
+                "MO",
+                "TU",
+                "WE",
+                "TH",
+                "FR",
+                "SA",
+                "SU"
+              ]
+            },
+            "by_second": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 60
+              }
+            },
+            "by_minute": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 59
+              }
+            },
+            "by_hour": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 23
+              }
+            },
+            "by_day": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "weekday": {
+                    "enum": [
+                      "MO",
+                      "TU",
+                      "WE",
+                      "TH",
+                      "FR",
+                      "SA",
+                      "SU"
+                    ]
+                  },
+                  "ordinal": {
+                    "type": "integer",
+                    "minimum": -53,
+                    "maximum": 53,
+                    "not": {
+                      "const": 0
+                    }
+                  }
+                },
+                "required": [
+                  "weekday"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "by_month_day": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "integer",
+                "minimum": -31,
+                "maximum": 31,
+                "not": {
+                  "const": 0
+                }
+              }
+            },
+            "by_year_day": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "integer",
+                "minimum": -366,
+                "maximum": 366,
+                "not": {
+                  "const": 0
+                }
+              }
+            },
+            "by_week_number": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "integer",
+                "minimum": -53,
+                "maximum": 53,
+                "not": {
+                  "const": 0
+                }
+              }
+            },
+            "by_month": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 12
+              }
+            },
+            "by_set_position": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "integer",
+                "minimum": -366,
+                "maximum": 366,
+                "not": {
+                  "const": 0
+                }
+              }
+            }
+          },
+          "required": [
+            "frequency",
+            "interval",
+            "count",
+            "until",
+            "week_start",
+            "by_second",
+            "by_minute",
+            "by_hour",
+            "by_day",
+            "by_month_day",
+            "by_year_day",
+            "by_week_number",
+            "by_month",
+            "by_set_position"
+          ],
+          "additionalProperties": false
+        },
+        "semantics": {
+          "type": "object",
+          "properties": {
+            "bounded": {
+              "type": "boolean"
+            },
+            "termination": {
+              "enum": [
+                "count",
+                "until",
+                "unbounded"
+              ]
+            }
+          },
+          "required": [
+            "bounded",
+            "termination"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "value",
+        "semantics"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "normalize"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "rrule"
+        },
+        "dialect": {
+          "enum": [
+            "rfc5545"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "frequency": {
+              "enum": [
+                "YEARLY",
+                "MONTHLY",
+                "WEEKLY",
+                "DAILY",
+                "HOURLY",
+                "MINUTELY",
+                "SECONDLY"
+              ]
+            },
+            "interval": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "count": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "until": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(?:0[1-9]\\d{2}|[1-9]\\d{3})\\d{4}T\\d{6}Z$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "week_start": {
+              "enum": [
+                "MO",
+                "TU",
+                "WE",
+                "TH",
+                "FR",
+                "SA",
+                "SU"
+              ]
+            },
+            "by_second": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 60
+              }
+            },
+            "by_minute": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 59
+              }
+            },
+            "by_hour": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 23
+              }
+            },
+            "by_day": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "weekday": {
+                    "enum": [
+                      "MO",
+                      "TU",
+                      "WE",
+                      "TH",
+                      "FR",
+                      "SA",
+                      "SU"
+                    ]
+                  },
+                  "ordinal": {
+                    "type": "integer",
+                    "minimum": -53,
+                    "maximum": 53,
+                    "not": {
+                      "const": 0
+                    }
+                  }
+                },
+                "required": [
+                  "weekday"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "by_month_day": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "integer",
+                "minimum": -31,
+                "maximum": 31,
+                "not": {
+                  "const": 0
+                }
+              }
+            },
+            "by_year_day": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "integer",
+                "minimum": -366,
+                "maximum": 366,
+                "not": {
+                  "const": 0
+                }
+              }
+            },
+            "by_week_number": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "integer",
+                "minimum": -53,
+                "maximum": 53,
+                "not": {
+                  "const": 0
+                }
+              }
+            },
+            "by_month": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 12
+              }
+            },
+            "by_set_position": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "integer",
+                "minimum": -366,
+                "maximum": 366,
+                "not": {
+                  "const": 0
+                }
+              }
+            }
+          },
+          "required": [
+            "frequency",
+            "interval",
+            "count",
+            "until",
+            "week_start",
+            "by_second",
+            "by_minute",
+            "by_hour",
+            "by_day",
+            "by_month_day",
+            "by_year_day",
+            "by_week_number",
+            "by_month",
+            "by_set_position"
+          ],
+          "additionalProperties": false
+        },
+        "semantics": {
+          "type": "object",
+          "properties": {
+            "bounded": {
+              "type": "boolean"
+            },
+            "termination": {
+              "enum": [
+                "count",
+                "until",
+                "unbounded"
+              ]
+            }
+          },
+          "required": [
+            "bounded",
+            "termination"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "value",
+        "semantics"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "validate"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "rrule"
+        },
+        "dialect": {
+          "enum": [
+            "rfc5545"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "semantics": {
+          "type": "object",
+          "properties": {
+            "bounded": {
+              "type": "boolean"
+            },
+            "termination": {
+              "enum": [
+                "count",
+                "until",
+                "unbounded"
+              ]
+            }
+          },
+          "required": [
+            "bounded",
+            "termination"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "semantics"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "interpret"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "semver_range"
+        },
+        "dialect": {
+          "enum": [
+            "npm"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "comparator_sets": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "operator": {
+                      "type": "string"
+                    },
+                    "version": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "operator",
+                    "version"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "required": [
+            "comparator_sets"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "normalize"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "semver_range"
+        },
+        "dialect": {
+          "enum": [
+            "npm"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "comparator_sets": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "operator": {
+                      "type": "string"
+                    },
+                    "version": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "operator",
+                    "version"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "required": [
+            "comparator_sets"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "validate"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "semver_range"
+        },
+        "dialect": {
+          "enum": [
+            "npm"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "query"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "semver_range"
+        },
+        "dialect": {
+          "enum": [
+            "npm"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "query_name": {
+          "const": "matches"
+        },
+        "query_result": {
+          "type": "object",
+          "properties": {
+            "candidate": {
+              "type": "string"
+            },
+            "matches": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "candidate",
+            "matches"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "query_name",
+        "query_result"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "query"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "semver_range"
+        },
+        "dialect": {
+          "enum": [
+            "npm"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "query_name": {
+          "const": "intersects"
+        },
+        "query_result": {
+          "type": "object",
+          "properties": {
+            "range": {
+              "type": "string"
+            },
+            "intersects": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "range",
+            "intersects"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "query_name",
+        "query_result"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "interpret"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "unix_permission"
+        },
+        "dialect": {
+          "enum": [
+            "posix-mode"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "octal": {
+              "type": "string",
+              "pattern": "^[0-7]{4}$"
+            },
+            "symbolic": {
+              "type": "string",
+              "minLength": 9,
+              "maxLength": 9
+            },
+            "special": {
+              "type": "object",
+              "properties": {
+                "setuid": {
+                  "type": "boolean"
+                },
+                "setgid": {
+                  "type": "boolean"
+                },
+                "sticky": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "setuid",
+                "setgid",
+                "sticky"
+              ],
+              "additionalProperties": false
+            },
+            "classes": {
+              "type": "object",
+              "properties": {
+                "owner": {
+                  "type": "object",
+                  "properties": {
+                    "read": {
+                      "type": "boolean"
+                    },
+                    "write": {
+                      "type": "boolean"
+                    },
+                    "execute": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "read",
+                    "write",
+                    "execute"
+                  ],
+                  "additionalProperties": false
+                },
+                "group": {
+                  "type": "object",
+                  "properties": {
+                    "read": {
+                      "type": "boolean"
+                    },
+                    "write": {
+                      "type": "boolean"
+                    },
+                    "execute": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "read",
+                    "write",
+                    "execute"
+                  ],
+                  "additionalProperties": false
+                },
+                "other": {
+                  "type": "object",
+                  "properties": {
+                    "read": {
+                      "type": "boolean"
+                    },
+                    "write": {
+                      "type": "boolean"
+                    },
+                    "execute": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "read",
+                    "write",
+                    "execute"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "owner",
+                "group",
+                "other"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "octal",
+            "symbolic",
+            "special",
+            "classes"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "normalize"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "unix_permission"
+        },
+        "dialect": {
+          "enum": [
+            "posix-mode"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "octal": {
+              "type": "string",
+              "pattern": "^[0-7]{4}$"
+            },
+            "symbolic": {
+              "type": "string",
+              "minLength": 9,
+              "maxLength": 9
+            },
+            "special": {
+              "type": "object",
+              "properties": {
+                "setuid": {
+                  "type": "boolean"
+                },
+                "setgid": {
+                  "type": "boolean"
+                },
+                "sticky": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "setuid",
+                "setgid",
+                "sticky"
+              ],
+              "additionalProperties": false
+            },
+            "classes": {
+              "type": "object",
+              "properties": {
+                "owner": {
+                  "type": "object",
+                  "properties": {
+                    "read": {
+                      "type": "boolean"
+                    },
+                    "write": {
+                      "type": "boolean"
+                    },
+                    "execute": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "read",
+                    "write",
+                    "execute"
+                  ],
+                  "additionalProperties": false
+                },
+                "group": {
+                  "type": "object",
+                  "properties": {
+                    "read": {
+                      "type": "boolean"
+                    },
+                    "write": {
+                      "type": "boolean"
+                    },
+                    "execute": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "read",
+                    "write",
+                    "execute"
+                  ],
+                  "additionalProperties": false
+                },
+                "other": {
+                  "type": "object",
+                  "properties": {
+                    "read": {
+                      "type": "boolean"
+                    },
+                    "write": {
+                      "type": "boolean"
+                    },
+                    "execute": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "read",
+                    "write",
+                    "execute"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "owner",
+                "group",
+                "other"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "octal",
+            "symbolic",
+            "special",
+            "classes"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "validate"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "unix_permission"
+        },
+        "dialect": {
+          "enum": [
+            "posix-mode"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "query"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "unix_permission"
+        },
+        "dialect": {
+          "enum": [
+            "posix-mode"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "query_name": {
+          "const": "allows"
+        },
+        "query_result": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "enum": [
+                "owner",
+                "group",
+                "other"
+              ]
+            },
+            "permission": {
+              "enum": [
+                "read",
+                "write",
+                "execute"
+              ]
+            },
+            "allows": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "subject",
+            "permission",
+            "allows"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "query_name",
+        "query_result"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "convert"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "unix_permission"
+        },
+        "dialect": {
+          "enum": [
+            "posix-mode"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "conversion_target": {
+          "const": "octal"
+        },
+        "converted": {
+          "type": "object",
+          "properties": {
+            "representation": {
+              "const": "octal"
+            },
+            "expression": {
+              "type": "string",
+              "pattern": "^[0-7]{4}$"
+            }
+          },
+          "required": [
+            "representation",
+            "expression"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "conversion_target",
+        "converted"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "convert"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "unix_permission"
+        },
+        "dialect": {
+          "enum": [
+            "posix-mode"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "conversion_target": {
+          "const": "symbolic"
+        },
+        "converted": {
+          "type": "object",
+          "properties": {
+            "representation": {
+              "const": "symbolic"
+            },
+            "expression": {
+              "type": "string",
+              "minLength": 9,
+              "maxLength": 9
+            }
+          },
+          "required": [
+            "representation",
+            "expression"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "conversion_target",
+        "converted"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "interpret"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "uri"
+        },
+        "dialect": {
+          "enum": [
+            "rfc3986"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "scheme": {
+              "type": "string"
+            },
+            "userinfo": {
+              "type": "string"
+            },
+            "host": {
+              "type": "string"
+            },
+            "port": {
+              "type": "string"
+            },
+            "path": {
+              "type": "string"
+            },
+            "query": {
+              "type": "string"
+            },
+            "fragment": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "scheme",
+            "path"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "normalize"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "uri"
+        },
+        "dialect": {
+          "enum": [
+            "rfc3986"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "scheme": {
+              "type": "string"
+            },
+            "userinfo": {
+              "type": "string"
+            },
+            "host": {
+              "type": "string"
+            },
+            "port": {
+              "type": "string"
+            },
+            "path": {
+              "type": "string"
+            },
+            "query": {
+              "type": "string"
+            },
+            "fragment": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "scheme",
+            "path"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "validate"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "uri"
+        },
+        "dialect": {
+          "enum": [
+            "rfc3986"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "query"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "uri"
+        },
+        "dialect": {
+          "enum": [
+            "rfc3986"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "query_name": {
+          "const": "resolve"
+        },
+        "query_result": {
+          "type": "object",
+          "properties": {
+            "reference": {
+              "type": "string"
+            },
+            "resolved": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "reference",
+            "resolved"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "query_name",
+        "query_result"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "operation": {
+          "const": "query"
+        },
+        "input": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "uri"
+        },
+        "dialect": {
+          "enum": [
+            "rfc3986"
+          ]
+        },
+        "normalized": {
+          "type": "string"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "span": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer"
+                  },
+                  "end": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "expected": {
+                "type": "object"
+              },
+              "details": {
+                "type": "object"
+              },
+              "repair_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expression": {
+                      "type": "string"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "expression"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "spec",
+            "compatibility_mode"
+          ],
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "compatibility_mode": {
+              "type": "string"
+            },
+            "timezone_data_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "query_name": {
+          "const": "equals"
+        },
+        "query_result": {
+          "type": "object",
+          "properties": {
+            "uri": {
+              "type": "string"
+            },
+            "equals": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "uri",
+            "equals"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "operation",
+        "input",
+        "kind",
+        "dialect",
+        "normalized",
+        "capabilities",
+        "diagnostics",
+        "provenance",
+        "query_name",
+        "query_result"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

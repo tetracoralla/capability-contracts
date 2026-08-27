@@ -54,7 +54,7 @@ const pilots = [
         'tests/test_capability_manifest.py',
       ],
     ],
-    profile: 'raster-prepare.v0.1.json',
+    profile: 'raster-prepare.v0.2.json',
     liveTransportProbe: true,
   },
   {
@@ -76,7 +76,7 @@ const pilots = [
     name: 'Projective',
     providerRoot: resolve(workspaceRoot, 'perspective-tool'),
     providerCheck: ['pnpm', ['capability:check']],
-    profile: 'projective-transform.v0.1.json',
+    profile: 'projective-transform.v0.2.json',
     liveTransportProbe: true,
   },
   {
@@ -90,6 +90,12 @@ const pilots = [
     providerRoot: resolve(workspaceRoot, 'dependency-preflight'),
     providerCheck: ['npm', ['run', 'check']],
     profile: 'package-dependency-evaluate.v0.1.json',
+  },
+  {
+    name: 'Equatorium',
+    providerRoot: resolve(workspaceRoot, 'standard-expression-interpreter'),
+    providerCheck: ['npm', ['run', 'check:capabilities']],
+    profile: 'standard-expression-run.v0.2.json',
   },
 ]
 

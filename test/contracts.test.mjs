@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
+  assertUniqueSemanticIdentities,
+  capabilityProfileDigest,
   canonicalJson,
   deepSubset,
   loadJson,
+  parseJson,
   resolveOperationSchemas,
   schemaDigest,
   validateAgainstSchema,
@@ -65,18 +68,23 @@ const suite = {
     },
   ],
 }
+const profileDigest = await capabilityProfileDigest(profile)
 const manifest = {
-  schemaVersion: 'openadam.provider-manifest.v0.1',
+  schemaVersion: 'openadam.provider-manifest.v0.3',
   provider: { id: 'org.openadam.test-provider', name: 'Test Provider', version: '0.1.0' },
   implementations: [
     {
       capabilityId: profile.id,
       capabilityVersion: profile.version,
+      profileDigest,
       adapter: {
         protocol: 'openadam.capability-jsonl.v0.1',
         command: 'node',
         args: ['scripts/adapter.mjs'],
       },
+      adapterBindings: [
+        { operationId: 'normalize', target: 'scripts/adapter.mjs#normalize' },
+      ],
       bindings: [
         {
           operationId: 'normalize',
@@ -89,6 +97,12 @@ const manifest = {
           transportSchemaDigests: {
             input: schemaDigest(inputSchema),
             output: schemaDigest(outputSchema),
+          },
+          annotations: {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+            openWorldHint: false,
           },
         },
       ],
@@ -106,7 +120,19 @@ test('canonicalJson follows RFC 8785 number and string serialization', () => {
     '{"numbers":[333333333.3333333,1e+30,4.5,0.002,1e-27],"one":1}',
   )
   assert.throws(() => canonicalJson(Number.NaN), /non-finite/)
+  assert.throws(() => canonicalJson(9007199254740992), /unsafe integers/)
   assert.throws(() => canonicalJson('\ud800'), /lone Unicode surrogate/)
+})
+
+test('strict JSON rejects integers that cannot survive IEEE-754 parsing exactly', () => {
+  assert.throws(
+    () => parseJson('{"value":9007199254740993}', 'unsafe integer fixture'),
+    /safe range or encoded as a string/,
+  )
+  assert.throws(
+    () => parseJson('{"value":9007199254740993e0}', 'unsafe scientific integer fixture'),
+    /loses IEEE-754 precision/,
+  )
 })
 
 test('loadJson rejects duplicate object keys before canonicalization', async () => {
@@ -125,17 +151,11 @@ test('valid contract set passes', async () => {
   await validateContractSet({ profile, suite, manifest })
 })
 
-test('Provider Manifest v0.2 requires exact canonical adapter operation targets', async () => {
+test('Provider Manifest v0.3 requires exact canonical adapter operation targets', async () => {
   const current = structuredClone(manifest)
-  current.schemaVersion = 'openadam.provider-manifest.v0.2'
   current.implementations[0].adapterBindings = [
     { operationId: 'different', target: 'src/adapter.mjs#different' },
   ]
-  current.implementations[0].transportSchemaProbe = {
-    protocol: 'openadam.transport-schema-jsonl.v0.1',
-    command: 'node',
-    args: ['scripts/transport-probe.mjs'],
-  }
   await assert.rejects(
     validateContractSet({ profile, suite, manifest: current }),
     /provider adapter binding mismatch; missing=\[normalize\], extra=\[different\]/,
@@ -184,7 +204,11 @@ test('legacy capability-definition v0.1 documents remain readable', async () => 
     ambiguity: 'not-applicable',
     provenance: 'not-applicable',
   }
-  await validateContractSet({ definition, suite, manifest })
+  const legacyManifest = structuredClone(manifest)
+  legacyManifest.schemaVersion = 'openadam.provider-manifest.v0.1'
+  delete legacyManifest.implementations[0].profileDigest
+  delete legacyManifest.implementations[0].adapterBindings
+  await validateContractSet({ definition, suite, manifest: legacyManifest })
 })
 
 test('legacy Capability Profile v0.2 documents remain readable', async () => {
@@ -199,7 +223,120 @@ test('legacy Capability Profile v0.2 documents remain readable', async () => {
     ambiguity: 'not-applicable',
     provenance: 'not-applicable',
   }
-  await validateContractSet({ profile: legacy, suite, manifest })
+  const legacyManifest = structuredClone(manifest)
+  legacyManifest.schemaVersion = 'openadam.provider-manifest.v0.1'
+  delete legacyManifest.implementations[0].profileDigest
+  delete legacyManifest.implementations[0].adapterBindings
+  await validateContractSet({ profile: legacy, suite, manifest: legacyManifest })
+})
+
+test('current Profiles reject manifests that do not bind the Profile semantics', async () => {
+  const legacyManifest = structuredClone(manifest)
+  legacyManifest.schemaVersion = 'openadam.provider-manifest.v0.1'
+  delete legacyManifest.implementations[0].profileDigest
+  delete legacyManifest.implementations[0].adapterBindings
+  await assert.rejects(
+    validateContractSet({ profile, suite, manifest: legacyManifest }),
+    /require Provider Manifest v0.3 semantic binding/,
+  )
+})
+
+test('Profile semantic drift is rejected even when operation schemas are unchanged', async () => {
+  const driftedProfile = structuredClone(profile)
+  driftedProfile.operations[0].semantics.stateAccess = 'destructive'
+  driftedProfile.operations[0].semantics.idempotency = 'non-idempotent'
+  await assert.rejects(
+    validateContractSet({ profile: driftedProfile, suite, manifest }),
+    /provider profile digest differs/,
+  )
+})
+
+test('provider annotations must exactly reflect the bound operation semantics', async () => {
+  const driftedManifest = structuredClone(manifest)
+  driftedManifest.implementations[0].bindings[0].annotations.readOnlyHint = false
+  await assert.rejects(
+    validateContractSet({ profile, suite, manifest: driftedManifest }),
+    /provider annotations differ from Capability semantics/,
+  )
+})
+
+test('catalog semantic identities are unique across documents', () => {
+  assert.throws(
+    () => assertUniqueSemanticIdentities([profile, structuredClone(profile)], 'catalog'),
+    /duplicate id org.openadam.test.normalize@0.1.0/,
+  )
+})
+
+test('effect corrections use new Capability versions instead of rewriting old identities', async () => {
+  const projectiveV01 = await loadJson(
+    fileURLToPath(new URL('../catalog/capabilities/projective-transform.v0.1.json', import.meta.url)),
+  )
+  const projectiveV02 = await loadJson(
+    fileURLToPath(new URL('../catalog/capabilities/projective-transform.v0.2.json', import.meta.url)),
+  )
+  const rasterV01 = await loadJson(
+    fileURLToPath(new URL('../catalog/capabilities/raster-prepare.v0.1.json', import.meta.url)),
+  )
+  const rasterV02 = await loadJson(
+    fileURLToPath(new URL('../catalog/capabilities/raster-prepare.v0.2.json', import.meta.url)),
+  )
+
+  assert.equal(projectiveV01.version, '0.1.0')
+  assert.equal(projectiveV01.operations.find(({ id }) => id === 'render').semantics.stateAccess, 'write')
+  assert.equal(projectiveV02.version, '0.2.0')
+  assert.equal(projectiveV02.operations.find(({ id }) => id === 'render').semantics.stateAccess, 'destructive')
+  assert.deepEqual(rasterV01.operations.map(({ semantics }) => semantics.stateAccess), ['write', 'write', 'write'])
+  assert.equal(rasterV02.version, '0.2.0')
+  assert.deepEqual(rasterV02.operations.map(({ semantics }) => semantics.stateAccess), ['destructive', 'destructive', 'destructive'])
+})
+
+test('stable error corrections use a new Capability version and keep carrier failures outside the waist', async () => {
+  const standardExpressionV01 = await loadJson(
+    fileURLToPath(new URL('../catalog/capabilities/standard-expression-run.v0.1.json', import.meta.url)),
+  )
+  const standardExpressionV02 = await loadJson(
+    fileURLToPath(new URL('../catalog/capabilities/standard-expression-run.v0.2.json', import.meta.url)),
+  )
+
+  assert.equal(standardExpressionV01.version, '0.1.0')
+  assert.deepEqual(
+    standardExpressionV01.operations[0].errors.map(({ code }) => code),
+    ['ADAPTER_INVALID_REQUEST', 'PROVIDER_ERROR'],
+  )
+  assert.equal(standardExpressionV02.version, '0.2.0')
+  assert.deepEqual(standardExpressionV02.operations[0].errors, [])
+})
+
+test('Capability JSONL v0.1 accepts only the bounded compatibility error forms', async () => {
+  const envelopeSchema = await loadJson(
+    fileURLToPath(new URL('../schemas/capability-jsonl-envelope.schema.v0.1.json', import.meta.url)),
+  )
+  validateAgainstSchema(
+    envelopeSchema,
+    { id: 'case-1', ok: false, error: { code: 'PROVIDER_FAILED', message: 'failed' } },
+    'error without retryable',
+  )
+  validateAgainstSchema(
+    envelopeSchema,
+    {
+      id: 'case-2',
+      ok: false,
+      error: { code: 'PROVIDER_FAILED', message: 'failed', retryable: false },
+    },
+    'error with retryable',
+  )
+  assert.throws(
+    () => validateAgainstSchema(
+      envelopeSchema,
+      {
+        id: 'case-3',
+        ok: false,
+        error: { code: 'PROVIDER_FAILED', message: 'failed', details: {} },
+      },
+      'error with extra fields',
+    ),
+    /additional properties/,
+  )
 })
 
 test('schema drift is rejected', async () => {

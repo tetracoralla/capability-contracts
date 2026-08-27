@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import test from 'node:test'
 import { fileURLToPath } from 'node:url'
-import { schemaDigest } from '../src/lib/contracts.mjs'
+import { capabilityProfileDigest, schemaDigest } from '../src/lib/contracts.mjs'
 
 const testRoot = dirname(fileURLToPath(import.meta.url))
 const repositoryRoot = resolve(testRoot, '..')
@@ -47,7 +47,13 @@ const profile = {
       },
       inputSchema,
       outputSchema,
-      errors: [],
+      errors: [
+        {
+          code: 'PROVIDER_FAILED',
+          description: 'The test provider failed.',
+          retryable: false,
+        },
+      ],
     },
   ],
 }
@@ -73,24 +79,23 @@ async function writeFixture(adapterScript, timeoutMs, inputValue = ' A ', withPr
     ],
   }
   const manifest = {
-    schemaVersion: withProbe
-      ? 'openadam.provider-manifest.v0.2'
-      : 'openadam.provider-manifest.v0.1',
+    schemaVersion: 'openadam.provider-manifest.v0.3',
     provider: { id: 'org.openadam.test-provider', name: 'Test Provider', version: '0.1.0' },
     implementations: [
       {
         capabilityId: profile.id,
         capabilityVersion: profile.version,
+        profileDigest: await capabilityProfileDigest(profile),
         adapter: {
           protocol: 'openadam.capability-jsonl.v0.1',
           command: process.execPath,
           args: [adapterScript],
         },
+        adapterBindings: [
+          { operationId: 'normalize', target: 'fixtures/provider#normalize' },
+        ],
         ...(withProbe
           ? {
-              adapterBindings: [
-                { operationId: 'normalize', target: 'fixtures/provider#normalize' },
-              ],
               transportSchemaProbe: {
                 protocol: 'openadam.transport-schema-jsonl.v0.1',
                 command: process.execPath,
@@ -111,6 +116,12 @@ async function writeFixture(adapterScript, timeoutMs, inputValue = ' A ', withPr
               input: schemaDigest(inputSchema),
               output: schemaDigest(outputSchema),
             },
+            annotations: {
+              readOnlyHint: true,
+              destructiveHint: false,
+              idempotentHint: true,
+              openWorldHint: false,
+            },
           },
         ],
       },
@@ -121,7 +132,7 @@ async function writeFixture(adapterScript, timeoutMs, inputValue = ' A ', withPr
     writeFile(suitePath, JSON.stringify(suite)),
     writeFile(manifestPath, JSON.stringify(manifest)),
   ])
-  return { root, profilePath, suitePath, manifestPath, manifest }
+  return { root, profilePath, suitePath, manifestPath, manifest, suite }
 }
 
 function runTransportFixture(paths) {
@@ -218,6 +229,40 @@ test('a contradictory provider response envelope is rejected', async () => {
     assert.equal(result.error, undefined)
     assert.equal(result.status, 1)
     assert.match(result.stderr, /invalid provider response fields/)
+  } finally {
+    await rm(paths.root, { recursive: true, force: true })
+  }
+})
+
+test('a provider error cannot add undeclared envelope fields', async () => {
+  const paths = await writeFixture(
+    resolve(testRoot, 'fixtures/invalid-error-fields-provider.mjs'),
+    1000,
+  )
+  try {
+    paths.suite.cases[0].expect = { outcome: 'error', code: 'PROVIDER_FAILED' }
+    await writeFile(paths.suitePath, JSON.stringify(paths.suite))
+    const result = runFixture(paths)
+    assert.equal(result.error, undefined)
+    assert.equal(result.status, 1)
+    assert.match(result.stderr, /invalid provider error envelope/)
+  } finally {
+    await rm(paths.root, { recursive: true, force: true })
+  }
+})
+
+test('an echoed retryable value must match the Capability Profile', async () => {
+  const paths = await writeFixture(
+    resolve(testRoot, 'fixtures/mismatched-retryable-provider.mjs'),
+    1000,
+  )
+  try {
+    paths.suite.cases[0].expect = { outcome: 'error', code: 'PROVIDER_FAILED' }
+    await writeFile(paths.suitePath, JSON.stringify(paths.suite))
+    const result = runFixture(paths)
+    assert.equal(result.error, undefined)
+    assert.equal(result.status, 1)
+    assert.match(result.stderr, /differs from the Capability Profile/)
   } finally {
     await rm(paths.root, { recursive: true, force: true })
   }

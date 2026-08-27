@@ -15,7 +15,9 @@ receipt is never authority over a changed live implementation.
 - `schemas/` owns the document formats for Capability Profiles, Provider
   Manifests, and Conformance Suites. The forward Profile format is
   `openadam.capability-profile.v0.3`; the v0.1/v0.2 families are compatibility
-  inputs, not templates for new catalog work.
+  inputs, not templates for new catalog work. Current Profiles require
+  `openadam.provider-manifest.v0.3`. It also owns the closed
+  `openadam.capability-jsonl.v0.1` request/result/error envelope.
 - `catalog/capabilities/` owns provider-neutral semantic identities,
   operations, canonical schemas, behavior, and stable errors.
   `catalog/conformance/` owns claim-sized portable examples against those
@@ -44,7 +46,12 @@ receipt is never authority over a changed live implementation.
    schema migration does not silently change `id`, semantic `version`, operation
    IDs, canonical schemas, or provider contract digests. A semantic change uses
    the compatibility rules and an appropriate Profile version; legacy document
-   readers must not make new legacy catalog entries acceptable.
+   readers must not make new legacy catalog entries acceptable. After an
+   `id@version` is cataloged or consumed, review findings cannot rewrite its
+   semantic identity in place. Preserve the old document, publish the
+   corrected meaning under a new version, and migrate provider and Procedure
+   bindings explicitly. Internal provider optimization needs no semantic bump
+   only when the complete bound meaning remains unchanged.
 3. **Operation semantics stay orthogonal.** Review `resultVariability`,
    `contextSources`, `stateAccess`, `idempotency`, `openWorld`, `ambiguity`, and
    `provenance` independently. Do not encode mutable context as stochasticity,
@@ -87,11 +94,17 @@ Required properties of that chain:
 - `contractSchemaDigests` equal the current canonical Profile schemas. A live
   `transportSchemaDigest` describes the observed product transport and need not
   equal the canonical schema because the adapter may translate between them;
+- `profileDigest` equals the JCS digest of the complete Profile with relative
+  operation schemas resolved inline and `$schema` location omitted. Semantic,
+  lifecycle, stable-error, or description drift is rejected even when schema
+  digests remain unchanged;
 - adapter and probe working directories remain relative and contained by the
   explicitly supplied provider root;
-- Provider Manifest v0.2 `adapterBindings` identify the real canonical adapter
-  targets. A public `bindings` entry is only a declaration until the executable
-  transport probe observes its current transport, target, and schemas;
+- Provider Manifest v0.3 `adapterBindings` identify the real canonical adapter
+  targets. Its four annotations must exactly project each operation's
+  `stateAccess`, `idempotency`, and `openWorld` semantics; they are not trusted
+  independent claims. A public `bindings` entry is only a declaration until the
+  executable transport probe observes its current transport, target, and schemas;
 - every active pilot is either enrolled in the current pilot runner with its
   real provider-local drift check or explicitly documented as catalog-only.
   Adding a catalog file without updating the owning cross-repository route is
@@ -122,6 +135,9 @@ The canonical adapter runner must preserve all of these boundaries:
 
 - one newline-delimited JSON request per case and one response with the exact
   `{id, ok, result}` or `{id, ok, error}` envelope;
+- an error contains exactly `{code, message}` or
+  `{code, message, retryable}`; its code is declared by the bound operation and
+  an echoed `retryable` exactly matches the Profile;
 - at most 1 MiB for each request line and response line, 64 KiB captured stderr,
   each case's whole-call timeout, forced termination on protocol or timeout
   failure, and a two-second clean-shutdown bound;

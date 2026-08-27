@@ -45,19 +45,28 @@ identity of a Capability.
 The current document family is experimental:
 
 - `openadam.capability-profile.v0.3`;
-- `openadam.provider-manifest.v0.2`;
+- `openadam.provider-manifest.v0.3`;
 - `openadam.conformance-suite.v0.2`;
-- `openadam.capability-jsonl.v0.1` for the reference adapter boundary.
+- `openadam.capability-jsonl.v0.1` for the reference adapter boundary, defined
+  by `schemas/capability-jsonl-envelope.schema.v0.1.json`.
 
-The catalog currently contains seven provider-seeded Profiles:
+The catalog currently contains eight provider-seeded Capability identities.
+Three retain superseded contracts alongside their active versions so old
+consumers do not receive changed caller-visible semantics in place:
 
 1. `org.openadam.file.inspect@0.1.0`;
 2. `org.openadam.structured-data.analyze@0.1.0`;
-3. `org.openadam.raster.prepare@0.1.0`;
+3. `org.openadam.raster.prepare@0.1.0` and `@0.2.0`;
 4. `org.openadam.raster.verify@0.1.0`;
-5. `org.openadam.projective.transform@0.1.0`;
+5. `org.openadam.projective.transform@0.1.0` and `@0.2.0`;
 6. `org.openadam.time-zone.convert@0.2.0`;
-7. `org.openadam.package-dependency.evaluate@0.1.0`.
+7. `org.openadam.package-dependency.evaluate@0.1.0`;
+8. `org.openadam.standard-expression.run@0.1.0` and `@0.2.0`.
+
+The Standard Expression `0.2.0` contract removes carrier-validation and
+provider-infrastructure failures from the stable semantic error set. Those
+failures remain at the adapter boundary rather than becoming portable domain
+meaning.
 
 Each Profile currently has one originating provider. That is enough to test
 the ABI and one adapter against declared examples, but not enough to claim
@@ -78,8 +87,9 @@ latency, credential, or deployment policy.
 
 ### Provider Manifest
 
-Declares one provider's version, adapter, public transport targets, canonical
-contract digests, live transport digests, and executable schema probe where
+Declares one provider's version, the digest of the complete resolved Profile,
+adapter, public transport targets, canonical contract digests, semantic-derived
+annotations, live transport digests, and executable schema probe where
 available. A manifest is a binding declaration, not proof that a package is
 installed or an endpoint is healthy.
 
@@ -138,9 +148,21 @@ version. A change to accepted input, result meaning, ordering, units,
 ambiguity, stable errors, or effects requires an appropriate Capability
 version.
 
+Once an `id@version` has entered the catalog or is consumed by a provider, its
+semantic contract is immutable. A reviewer may identify a better or more
+conservative contract, but that correction is published as a new semantic
+version and consumers migrate explicitly. Provider performance, scheduling,
+connection reuse, or internal algorithms may improve without a Capability
+version change only while inputs, outputs, errors, effects, and caller-visible
+meaning remain unchanged.
+
 The older `openadam.capability-profile.v0.2` and
 `openadam.capability-definition.v0.1` formats remain readable compatibility
 inputs. New catalog entries use the forward v0.3 Profile format.
+
+Current Profiles require Provider Manifest v0.3. See
+[Provider Manifest v0.3](docs/migrations/provider-manifest-v0.3.md) for the
+semantic binding migration.
 
 ## Scope
 
