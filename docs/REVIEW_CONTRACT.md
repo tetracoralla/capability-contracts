@@ -1,9 +1,17 @@
 # Capability Semantic ABI review contract
 
-This contract defines the evidence required to review the provider-neutral
-Capability Semantic ABI, its catalog, and its reference conformance tooling.
-It does not certify a provider product, an installed Agent route, a Procedure,
-or cross-provider substitutability by itself.
+This contract records the durable claim boundaries and minimum product-specific
+coverage for the provider-neutral Capability Semantic ABI, its catalog, and its
+reference conformance tooling. It is not a fixed reasoning script or completion
+runway, and it does not certify a provider product, installed Agent route,
+Procedure, or cross-provider substitutability by itself.
+
+Before applying the named checks, reconstruct the current schemas, catalog,
+provider chain, executable runners, and public claims from source and live
+boundaries. Perform and report at least one independent discovery route derived
+from that current model rather than from this file, test names, prior findings,
+or the changed-file list. Completing every item below cannot by itself end the
+review.
 
 Read `PRODUCT_MODEL.md` and `SEMANTIC_TERMS.md` first. Review current central
 documents together with the current provider source, manifest, adapter, public
