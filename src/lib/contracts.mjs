@@ -1,5 +1,5 @@
-import { readFile } from 'node:fs/promises'
-import { dirname, isAbsolute, resolve } from 'node:path'
+import { readFile, realpath } from 'node:fs/promises'
+import { dirname, isAbsolute, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createHash } from 'node:crypto'
 import Ajv from 'ajv'
@@ -249,10 +249,33 @@ async function resolveOperationSchema(schema, profileBase, label) {
   }
   const schemaPath = resolve(profileBase, reference)
   const allowedRoot = resolve(profileBase, '..')
-  if (schemaPath !== allowedRoot && !schemaPath.startsWith(`${allowedRoot}/`)) {
-    throw new Error(`${label}: schema reference escapes the catalog capability root`)
+  const { path: containedSchemaPath } = await resolveContainedRealPath(
+    allowedRoot,
+    schemaPath,
+    `${label}: schema reference escapes the catalog capability root`,
+  )
+  return loadJson(containedSchemaPath)
+}
+
+export async function resolveContainedRealPath(rootPath, candidatePath, errorMessage) {
+  function isOutside(root, candidate) {
+    const relativePath = relative(root, candidate)
+    return (
+      relativePath === '..'
+      || relativePath.startsWith(`..${process.platform === 'win32' ? '\\' : '/'}`)
+      || isAbsolute(relativePath)
+    )
   }
-  return loadJson(schemaPath)
+
+  const lexicalRoot = resolve(rootPath)
+  const lexicalCandidate = resolve(candidatePath)
+  if (isOutside(lexicalRoot, lexicalCandidate)) throw new Error(errorMessage)
+  const [canonicalRoot, canonicalCandidate] = await Promise.all([
+    realpath(lexicalRoot),
+    realpath(lexicalCandidate),
+  ])
+  if (isOutside(canonicalRoot, canonicalCandidate)) throw new Error(errorMessage)
+  return { root: canonicalRoot, path: canonicalCandidate }
 }
 
 export async function resolveOperationSchemas(profile, profilePath) {

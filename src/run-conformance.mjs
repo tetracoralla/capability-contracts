@@ -7,6 +7,7 @@ import {
   deepSubset,
   loadJson,
   parseJson,
+  resolveContainedRealPath,
   validateAgainstSchema,
   validateContractSet,
 } from './lib/contracts.mjs'
@@ -17,6 +18,7 @@ const maxStderrBytes = 64 * 1024
 const shutdownTimeoutMs = 2000
 
 function parseArgs(argv) {
+  const allowed = new Set(['profile', 'definition', 'suite', 'manifest', 'provider-root'])
   const values = new Map()
   for (let index = 0; index < argv.length; index += 2) {
     const flag = argv[index]
@@ -27,7 +29,10 @@ function parseArgs(argv) {
         + '--provider-root DIR (legacy: --definition FILE)',
       )
     }
-    values.set(flag.slice(2), value)
+    const name = flag.slice(2)
+    if (!allowed.has(name)) throw new Error(`Unknown --${name}`)
+    if (values.has(name)) throw new Error(`Duplicate --${name}`)
+    values.set(name, value)
   }
   if (values.has('profile') === values.has('definition')) {
     throw new Error('Exactly one of --profile or legacy --definition is required')
@@ -126,11 +131,13 @@ async function main() {
       candidate.capabilityId === profile.id &&
       candidate.capabilityVersion === profile.version,
   )
-  const providerRoot = resolve(args.get('provider-root'))
-  const adapterCwd = resolve(providerRoot, implementation.adapter.cwd ?? '.')
-  if (!adapterCwd.startsWith(`${providerRoot}/`) && adapterCwd !== providerRoot) {
-    throw new Error('provider adapter cwd escapes the provider root')
-  }
+  const providerRootPath = resolve(args.get('provider-root'))
+  const adapterCwdPath = resolve(providerRootPath, implementation.adapter.cwd ?? '.')
+  const { root: providerRoot, path: adapterCwd } = await resolveContainedRealPath(
+    providerRootPath,
+    adapterCwdPath,
+    'provider adapter cwd escapes the provider root',
+  )
   const child = spawn(implementation.adapter.command, implementation.adapter.args, {
     cwd: adapterCwd,
     env: { ...process.env, OPENADAM_PROVIDER_ROOT: providerRoot },

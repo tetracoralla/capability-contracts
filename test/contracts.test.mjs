@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict'
+import { mkdir, mkdtemp, rm, symlink, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { resolve } from 'node:path'
 import test from 'node:test'
 import {
   assertUniqueSemanticIdentities,
@@ -140,6 +143,25 @@ test('loadJson rejects duplicate object keys before canonicalization', async () 
     loadJson(fileURLToPath(new URL('./fixtures/duplicate-keys.json', import.meta.url))),
     /duplicate JSON object key value/,
   )
+})
+
+test('relative operation schemas cannot escape the capability root through a symlink', async () => {
+  const root = await mkdtemp(resolve(tmpdir(), 'capability-schema-path-test-'))
+  const capabilityRoot = resolve(root, 'catalog/capabilities')
+  const outsideSchema = resolve(root, 'outside-schema.json')
+  try {
+    await mkdir(capabilityRoot, { recursive: true })
+    await writeFile(outsideSchema, JSON.stringify(inputSchema))
+    await symlink(outsideSchema, resolve(capabilityRoot, 'linked-schema.json'))
+    const linkedProfile = structuredClone(profile)
+    linkedProfile.operations[0].inputSchema = { $ref: './linked-schema.json' }
+    await assert.rejects(
+      resolveOperationSchemas(linkedProfile, resolve(capabilityRoot, 'profile.json')),
+      /schema reference escapes the catalog capability root/,
+    )
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
 })
 
 test('deepSubset keeps array ordering and permits extra object fields', () => {

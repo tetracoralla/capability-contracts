@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import test from 'node:test'
@@ -189,6 +189,49 @@ test('transport conformance rejects a declared target that the live probe does n
   }
 })
 
+test('transport conformance rejects blank lines around its one JSONL response', async () => {
+  const paths = await writeFixture(
+    resolve(testRoot, 'fixtures/hanging-provider.mjs'),
+    1000,
+    ' A ',
+    true,
+  )
+  try {
+    paths.manifest.implementations[0].transportSchemaProbe.args = [
+      resolve(testRoot, 'fixtures/blank-lines-transport-schema-probe.mjs'),
+    ]
+    await writeFile(paths.manifestPath, JSON.stringify(paths.manifest))
+    const result = runTransportFixture(paths)
+    assert.equal(result.error, undefined)
+    assert.equal(result.status, 1)
+    assert.match(result.stderr, /must return exactly one JSONL response/)
+  } finally {
+    await rm(paths.root, { recursive: true, force: true })
+  }
+})
+
+test('transport conformance rejects a probe cwd that escapes through a symlink', async () => {
+  const paths = await writeFixture(
+    resolve(testRoot, 'fixtures/hanging-provider.mjs'),
+    1000,
+    ' A ',
+    true,
+  )
+  const outside = await mkdtemp(resolve(tmpdir(), 'capability-probe-cwd-test-'))
+  try {
+    await symlink(outside, resolve(paths.root, 'escaped-cwd'))
+    paths.manifest.implementations[0].transportSchemaProbe.cwd = 'escaped-cwd'
+    await writeFile(paths.manifestPath, JSON.stringify(paths.manifest))
+    const result = runTransportFixture(paths)
+    assert.equal(result.error, undefined)
+    assert.equal(result.status, 1)
+    assert.match(result.stderr, /transport schema probe cwd escapes the provider root/)
+  } finally {
+    await rm(paths.root, { recursive: true, force: true })
+    await rm(outside, { recursive: true, force: true })
+  }
+})
+
 function runFixture(paths, profileFlag = '--profile') {
   return spawnSync(
     process.execPath,
@@ -214,6 +257,53 @@ test('a timed-out provider is terminated and the runner returns', async () => {
     assert.equal(result.error, undefined)
     assert.equal(result.status, 1)
     assert.match(result.stderr, /timed out after 20ms/)
+  } finally {
+    await rm(paths.root, { recursive: true, force: true })
+  }
+})
+
+test('canonical conformance rejects an adapter cwd that escapes through a symlink', async () => {
+  const paths = await writeFixture(resolve(testRoot, 'fixtures/hanging-provider.mjs'), 1000)
+  const outside = await mkdtemp(resolve(tmpdir(), 'capability-adapter-cwd-test-'))
+  try {
+    await symlink(outside, resolve(paths.root, 'escaped-cwd'))
+    paths.manifest.implementations[0].adapter.cwd = 'escaped-cwd'
+    await writeFile(paths.manifestPath, JSON.stringify(paths.manifest))
+    const result = runFixture(paths)
+    assert.equal(result.error, undefined)
+    assert.equal(result.status, 1)
+    assert.match(result.stderr, /provider adapter cwd escapes the provider root/)
+  } finally {
+    await rm(paths.root, { recursive: true, force: true })
+    await rm(outside, { recursive: true, force: true })
+  }
+})
+
+test('canonical conformance rejects unknown and duplicate command-line flags', async () => {
+  const paths = await writeFixture(resolve(testRoot, 'fixtures/hanging-provider.mjs'), 1000)
+  try {
+    const baseArgs = [
+      runnerPath,
+      '--profile', paths.profilePath,
+      '--suite', paths.suitePath,
+      '--manifest', paths.manifestPath,
+      '--provider-root', paths.root,
+    ]
+    const unknown = spawnSync(
+      process.execPath,
+      [...baseArgs, '--profiel', paths.profilePath],
+      { cwd: repositoryRoot, encoding: 'utf8', timeout: 5000 },
+    )
+    assert.equal(unknown.status, 1)
+    assert.match(unknown.stderr, /Unknown --profiel/)
+
+    const duplicate = spawnSync(
+      process.execPath,
+      [...baseArgs, '--suite', paths.suitePath],
+      { cwd: repositoryRoot, encoding: 'utf8', timeout: 5000 },
+    )
+    assert.equal(duplicate.status, 1)
+    assert.match(duplicate.stderr, /Duplicate --suite/)
   } finally {
     await rm(paths.root, { recursive: true, force: true })
   }
