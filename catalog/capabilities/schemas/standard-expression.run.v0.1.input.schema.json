@@ -1,0 +1,1550 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:openadam:capability:standard-expression.run:input:v0.1",
+  "title": "Canonical standard-expression request",
+  "type": "object",
+  "required": [
+    "op",
+    "expression"
+  ],
+  "properties": {
+    "op": {
+      "enum": [
+        "interpret",
+        "validate",
+        "normalize",
+        "query",
+        "convert",
+        "detect"
+      ]
+    },
+    "expression": {
+      "type": "string",
+      "maxLength": 8192
+    },
+    "kind": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dialect": {
+      "type": "string",
+      "minLength": 1
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "reference_time": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 35
+        }
+      },
+      "additionalProperties": false
+    },
+    "derive": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "query": {
+      "type": "object"
+    },
+    "convert": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "oneOf": [
+    {
+      "properties": {
+        "op": {
+          "const": "interpret"
+        },
+        "kind": {
+          "const": "cidr"
+        },
+        "dialect": {
+          "enum": [
+            "cidr"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "validate"
+        },
+        "kind": {
+          "const": "cidr"
+        },
+        "dialect": {
+          "enum": [
+            "cidr"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "normalize"
+        },
+        "kind": {
+          "const": "cidr"
+        },
+        "dialect": {
+          "enum": [
+            "cidr"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "query"
+        },
+        "kind": {
+          "const": "cidr"
+        },
+        "dialect": {
+          "enum": [
+            "cidr"
+          ]
+        },
+        "context": false,
+        "derive": false,
+        "convert": false,
+        "query": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "contains"
+            },
+            "arguments": {
+              "type": "object",
+              "properties": {
+                "address": {
+                  "type": "string",
+                  "description": "Four-part decimal IPv4 or canonical-compatible IPv6 address.",
+                  "minLength": 2,
+                  "maxLength": 45
+                }
+              },
+              "required": [
+                "address"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name",
+            "arguments"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "op",
+        "kind",
+        "query"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "query"
+        },
+        "kind": {
+          "const": "cidr"
+        },
+        "dialect": {
+          "enum": [
+            "cidr"
+          ]
+        },
+        "context": false,
+        "derive": false,
+        "convert": false,
+        "query": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "overlaps"
+            },
+            "arguments": {
+              "type": "object",
+              "properties": {
+                "cidr": {
+                  "type": "string",
+                  "description": "Strict IPv4 or IPv6 CIDR.",
+                  "minLength": 4,
+                  "maxLength": 49
+                }
+              },
+              "required": [
+                "cidr"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name",
+            "arguments"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "op",
+        "kind",
+        "query"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "interpret"
+        },
+        "kind": {
+          "const": "content_type"
+        },
+        "dialect": {
+          "enum": [
+            "http"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "validate"
+        },
+        "kind": {
+          "const": "content_type"
+        },
+        "dialect": {
+          "enum": [
+            "http"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "normalize"
+        },
+        "kind": {
+          "const": "content_type"
+        },
+        "dialect": {
+          "enum": [
+            "http"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "query"
+        },
+        "kind": {
+          "const": "content_type"
+        },
+        "dialect": {
+          "enum": [
+            "http"
+          ]
+        },
+        "context": false,
+        "derive": false,
+        "convert": false,
+        "query": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "parameter"
+            },
+            "arguments": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "HTTP token parameter name.",
+                  "minLength": 1,
+                  "maxLength": 127,
+                  "pattern": "^[!#$%&'*+.^_`|~0-9A-Za-z-]+$"
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name",
+            "arguments"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "op",
+        "kind",
+        "query"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "interpret"
+        },
+        "kind": {
+          "const": "cron"
+        },
+        "dialect": {
+          "enum": [
+            "unix-5",
+            "github-actions"
+          ]
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "timezone": {
+              "type": "string",
+              "description": "IANA timezone name; defaults to UTC.",
+              "minLength": 1,
+              "maxLength": 255
+            },
+            "reference_time": {
+              "type": "string",
+              "description": "RFC 3339 timestamp with seconds and an explicit Z or numeric offset.",
+              "minLength": 20,
+              "maxLength": 35,
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?(?:Z|[+-]\\d{2}:\\d{2})$"
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "derive": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "human_description",
+              "next_occurrences"
+            ]
+          },
+          "uniqueItems": true,
+          "maxItems": 2
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind",
+        "dialect"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "derive": {
+                "type": "array",
+                "contains": {
+                  "const": "next_occurrences"
+                }
+              }
+            },
+            "required": [
+              "derive"
+            ]
+          },
+          "then": {
+            "properties": {
+              "context": {
+                "type": "object",
+                "properties": {
+                  "timezone": {
+                    "type": "string",
+                    "description": "IANA timezone name; defaults to UTC.",
+                    "minLength": 1,
+                    "maxLength": 255
+                  },
+                  "reference_time": {
+                    "type": "string",
+                    "description": "RFC 3339 timestamp with seconds and an explicit Z or numeric offset.",
+                    "minLength": 20,
+                    "maxLength": 35,
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?(?:Z|[+-]\\d{2}:\\d{2})$"
+                  }
+                },
+                "required": [
+                  "reference_time"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "context"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "validate"
+        },
+        "kind": {
+          "const": "cron"
+        },
+        "dialect": {
+          "enum": [
+            "unix-5",
+            "github-actions"
+          ]
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "timezone": {
+              "type": "string",
+              "description": "IANA timezone name; defaults to UTC.",
+              "minLength": 1,
+              "maxLength": 255
+            },
+            "reference_time": {
+              "type": "string",
+              "description": "RFC 3339 timestamp with seconds and an explicit Z or numeric offset.",
+              "minLength": 20,
+              "maxLength": 35,
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?(?:Z|[+-]\\d{2}:\\d{2})$"
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "derive": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "human_description",
+              "next_occurrences"
+            ]
+          },
+          "uniqueItems": true,
+          "maxItems": 2
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind",
+        "dialect"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "derive": {
+                "type": "array",
+                "contains": {
+                  "const": "next_occurrences"
+                }
+              }
+            },
+            "required": [
+              "derive"
+            ]
+          },
+          "then": {
+            "properties": {
+              "context": {
+                "type": "object",
+                "properties": {
+                  "timezone": {
+                    "type": "string",
+                    "description": "IANA timezone name; defaults to UTC.",
+                    "minLength": 1,
+                    "maxLength": 255
+                  },
+                  "reference_time": {
+                    "type": "string",
+                    "description": "RFC 3339 timestamp with seconds and an explicit Z or numeric offset.",
+                    "minLength": 20,
+                    "maxLength": 35,
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?(?:Z|[+-]\\d{2}:\\d{2})$"
+                  }
+                },
+                "required": [
+                  "reference_time"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "context"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "normalize"
+        },
+        "kind": {
+          "const": "cron"
+        },
+        "dialect": {
+          "enum": [
+            "unix-5",
+            "github-actions"
+          ]
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "timezone": {
+              "type": "string",
+              "description": "IANA timezone name; defaults to UTC.",
+              "minLength": 1,
+              "maxLength": 255
+            },
+            "reference_time": {
+              "type": "string",
+              "description": "RFC 3339 timestamp with seconds and an explicit Z or numeric offset.",
+              "minLength": 20,
+              "maxLength": 35,
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?(?:Z|[+-]\\d{2}:\\d{2})$"
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "derive": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "human_description",
+              "next_occurrences"
+            ]
+          },
+          "uniqueItems": true,
+          "maxItems": 2
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind",
+        "dialect"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "derive": {
+                "type": "array",
+                "contains": {
+                  "const": "next_occurrences"
+                }
+              }
+            },
+            "required": [
+              "derive"
+            ]
+          },
+          "then": {
+            "properties": {
+              "context": {
+                "type": "object",
+                "properties": {
+                  "timezone": {
+                    "type": "string",
+                    "description": "IANA timezone name; defaults to UTC.",
+                    "minLength": 1,
+                    "maxLength": 255
+                  },
+                  "reference_time": {
+                    "type": "string",
+                    "description": "RFC 3339 timestamp with seconds and an explicit Z or numeric offset.",
+                    "minLength": 20,
+                    "maxLength": 35,
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?(?:Z|[+-]\\d{2}:\\d{2})$"
+                  }
+                },
+                "required": [
+                  "reference_time"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "context"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "query"
+        },
+        "kind": {
+          "const": "cron"
+        },
+        "dialect": {
+          "enum": [
+            "unix-5",
+            "github-actions"
+          ]
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "timezone": {
+              "type": "string",
+              "description": "IANA timezone name; defaults to UTC.",
+              "minLength": 1,
+              "maxLength": 255
+            },
+            "reference_time": {
+              "type": "string",
+              "description": "RFC 3339 timestamp with seconds and an explicit Z or numeric offset.",
+              "minLength": 20,
+              "maxLength": 35,
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?(?:Z|[+-]\\d{2}:\\d{2})$"
+            }
+          },
+          "required": [
+            "reference_time"
+          ],
+          "additionalProperties": false
+        },
+        "derive": false,
+        "convert": false,
+        "query": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "next_occurrences"
+            },
+            "arguments": {
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer",
+                  "description": "Number of occurrences to return; also constrained by limits.max_output_items.",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              },
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "op",
+        "kind",
+        "dialect",
+        "context",
+        "query"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "query"
+        },
+        "kind": {
+          "const": "cron"
+        },
+        "dialect": {
+          "enum": [
+            "unix-5",
+            "github-actions"
+          ]
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "timezone": {
+              "type": "string",
+              "description": "IANA timezone name; defaults to UTC.",
+              "minLength": 1,
+              "maxLength": 255
+            },
+            "reference_time": {
+              "type": "string",
+              "description": "RFC 3339 timestamp with seconds and an explicit Z or numeric offset.",
+              "minLength": 20,
+              "maxLength": 35,
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?(?:Z|[+-]\\d{2}:\\d{2})$"
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "derive": false,
+        "convert": false,
+        "query": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "matches"
+            },
+            "arguments": {
+              "type": "object",
+              "properties": {
+                "candidate": {
+                  "type": "string",
+                  "description": "RFC 3339 timestamp with an explicit Z or numeric offset.",
+                  "minLength": 20,
+                  "maxLength": 35
+                }
+              },
+              "required": [
+                "candidate"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name",
+            "arguments"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "op",
+        "kind",
+        "dialect",
+        "query"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "interpret"
+        },
+        "kind": {
+          "const": "iso_duration"
+        },
+        "dialect": {
+          "enum": [
+            "iso8601-1"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "validate"
+        },
+        "kind": {
+          "const": "iso_duration"
+        },
+        "dialect": {
+          "enum": [
+            "iso8601-1"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "normalize"
+        },
+        "kind": {
+          "const": "iso_duration"
+        },
+        "dialect": {
+          "enum": [
+            "iso8601-1"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "interpret"
+        },
+        "kind": {
+          "const": "rrule"
+        },
+        "dialect": {
+          "enum": [
+            "rfc5545"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "validate"
+        },
+        "kind": {
+          "const": "rrule"
+        },
+        "dialect": {
+          "enum": [
+            "rfc5545"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "normalize"
+        },
+        "kind": {
+          "const": "rrule"
+        },
+        "dialect": {
+          "enum": [
+            "rfc5545"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "interpret"
+        },
+        "kind": {
+          "const": "semver_range"
+        },
+        "dialect": {
+          "enum": [
+            "npm"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "validate"
+        },
+        "kind": {
+          "const": "semver_range"
+        },
+        "dialect": {
+          "enum": [
+            "npm"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "normalize"
+        },
+        "kind": {
+          "const": "semver_range"
+        },
+        "dialect": {
+          "enum": [
+            "npm"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "query"
+        },
+        "kind": {
+          "const": "semver_range"
+        },
+        "dialect": {
+          "enum": [
+            "npm"
+          ]
+        },
+        "context": false,
+        "derive": false,
+        "convert": false,
+        "query": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "matches"
+            },
+            "arguments": {
+              "type": "object",
+              "properties": {
+                "candidate": {
+                  "type": "string",
+                  "description": "Semantic version candidate.",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "include_prerelease": {
+                  "type": "boolean",
+                  "description": "Apply node-semver includePrerelease range semantics."
+                }
+              },
+              "required": [
+                "candidate"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name",
+            "arguments"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "op",
+        "kind",
+        "query"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "query"
+        },
+        "kind": {
+          "const": "semver_range"
+        },
+        "dialect": {
+          "enum": [
+            "npm"
+          ]
+        },
+        "context": false,
+        "derive": false,
+        "convert": false,
+        "query": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "intersects"
+            },
+            "arguments": {
+              "type": "object",
+              "properties": {
+                "range": {
+                  "type": "string",
+                  "description": "Second npm semantic-version range.",
+                  "minLength": 1,
+                  "maxLength": 8192
+                },
+                "include_prerelease": {
+                  "type": "boolean",
+                  "description": "Apply node-semver includePrerelease range semantics."
+                }
+              },
+              "required": [
+                "range"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name",
+            "arguments"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "op",
+        "kind",
+        "query"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "interpret"
+        },
+        "kind": {
+          "const": "unix_permission"
+        },
+        "dialect": {
+          "enum": [
+            "posix-mode"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "validate"
+        },
+        "kind": {
+          "const": "unix_permission"
+        },
+        "dialect": {
+          "enum": [
+            "posix-mode"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "normalize"
+        },
+        "kind": {
+          "const": "unix_permission"
+        },
+        "dialect": {
+          "enum": [
+            "posix-mode"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "query"
+        },
+        "kind": {
+          "const": "unix_permission"
+        },
+        "dialect": {
+          "enum": [
+            "posix-mode"
+          ]
+        },
+        "context": false,
+        "derive": false,
+        "convert": false,
+        "query": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "allows"
+            },
+            "arguments": {
+              "type": "object",
+              "properties": {
+                "subject": {
+                  "type": "string",
+                  "description": "Permission class.",
+                  "enum": [
+                    "owner",
+                    "group",
+                    "other"
+                  ]
+                },
+                "permission": {
+                  "type": "string",
+                  "description": "Permission bit.",
+                  "enum": [
+                    "read",
+                    "write",
+                    "execute"
+                  ]
+                }
+              },
+              "required": [
+                "subject",
+                "permission"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name",
+            "arguments"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "op",
+        "kind",
+        "query"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "convert"
+        },
+        "kind": {
+          "const": "unix_permission"
+        },
+        "dialect": {
+          "enum": [
+            "posix-mode"
+          ]
+        },
+        "context": false,
+        "derive": false,
+        "query": false,
+        "convert": {
+          "type": "object",
+          "properties": {
+            "target_dialect": {
+              "enum": [
+                "posix-mode"
+              ]
+            },
+            "target_representation": {
+              "enum": [
+                "octal",
+                "symbolic"
+              ]
+            },
+            "arguments": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "target_representation"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "op",
+        "kind",
+        "convert"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "interpret"
+        },
+        "kind": {
+          "const": "uri"
+        },
+        "dialect": {
+          "enum": [
+            "rfc3986"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "validate"
+        },
+        "kind": {
+          "const": "uri"
+        },
+        "dialect": {
+          "enum": [
+            "rfc3986"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "normalize"
+        },
+        "kind": {
+          "const": "uri"
+        },
+        "dialect": {
+          "enum": [
+            "rfc3986"
+          ]
+        },
+        "context": false,
+        "derive": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op",
+        "kind"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "query"
+        },
+        "kind": {
+          "const": "uri"
+        },
+        "dialect": {
+          "enum": [
+            "rfc3986"
+          ]
+        },
+        "context": false,
+        "derive": false,
+        "convert": false,
+        "query": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "resolve"
+            },
+            "arguments": {
+              "type": "object",
+              "properties": {
+                "reference": {
+                  "type": "string",
+                  "description": "URI reference to resolve.",
+                  "maxLength": 8192
+                }
+              },
+              "required": [
+                "reference"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name",
+            "arguments"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "op",
+        "kind",
+        "query"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "query"
+        },
+        "kind": {
+          "const": "uri"
+        },
+        "dialect": {
+          "enum": [
+            "rfc3986"
+          ]
+        },
+        "context": false,
+        "derive": false,
+        "convert": false,
+        "query": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "equals"
+            },
+            "arguments": {
+              "type": "object",
+              "properties": {
+                "uri": {
+                  "type": "string",
+                  "description": "URI to compare.",
+                  "minLength": 1,
+                  "maxLength": 8192
+                }
+              },
+              "required": [
+                "uri"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name",
+            "arguments"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "op",
+        "kind",
+        "query"
+      ]
+    },
+    {
+      "properties": {
+        "op": {
+          "const": "detect"
+        },
+        "kind": false,
+        "dialect": false,
+        "context": false,
+        "derive": false,
+        "query": false,
+        "convert": false
+      },
+      "required": [
+        "op"
+      ]
+    }
+  ]
+}

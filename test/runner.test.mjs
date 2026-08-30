@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import test from 'node:test'
 import { fileURLToPath } from 'node:url'
-import { schemaDigest } from '../src/lib/contracts.mjs'
+import { capabilityProfileDigest, schemaDigest } from '../src/lib/contracts.mjs'
 
 const testRoot = dirname(fileURLToPath(import.meta.url))
 const repositoryRoot = resolve(testRoot, '..')
@@ -47,7 +47,13 @@ const profile = {
       },
       inputSchema,
       outputSchema,
-      errors: [],
+      errors: [
+        {
+          code: 'PROVIDER_FAILED',
+          description: 'The test provider failed.',
+          retryable: false,
+        },
+      ],
     },
   ],
 }
@@ -73,24 +79,23 @@ async function writeFixture(adapterScript, timeoutMs, inputValue = ' A ', withPr
     ],
   }
   const manifest = {
-    schemaVersion: withProbe
-      ? 'openadam.provider-manifest.v0.2'
-      : 'openadam.provider-manifest.v0.1',
+    schemaVersion: 'openadam.provider-manifest.v0.3',
     provider: { id: 'org.openadam.test-provider', name: 'Test Provider', version: '0.1.0' },
     implementations: [
       {
         capabilityId: profile.id,
         capabilityVersion: profile.version,
+        profileDigest: await capabilityProfileDigest(profile),
         adapter: {
           protocol: 'openadam.capability-jsonl.v0.1',
           command: process.execPath,
           args: [adapterScript],
         },
+        adapterBindings: [
+          { operationId: 'normalize', target: 'fixtures/provider#normalize' },
+        ],
         ...(withProbe
           ? {
-              adapterBindings: [
-                { operationId: 'normalize', target: 'fixtures/provider#normalize' },
-              ],
               transportSchemaProbe: {
                 protocol: 'openadam.transport-schema-jsonl.v0.1',
                 command: process.execPath,
@@ -111,6 +116,12 @@ async function writeFixture(adapterScript, timeoutMs, inputValue = ' A ', withPr
               input: schemaDigest(inputSchema),
               output: schemaDigest(outputSchema),
             },
+            annotations: {
+              readOnlyHint: true,
+              destructiveHint: false,
+              idempotentHint: true,
+              openWorldHint: false,
+            },
           },
         ],
       },
@@ -121,7 +132,7 @@ async function writeFixture(adapterScript, timeoutMs, inputValue = ' A ', withPr
     writeFile(suitePath, JSON.stringify(suite)),
     writeFile(manifestPath, JSON.stringify(manifest)),
   ])
-  return { root, profilePath, suitePath, manifestPath, manifest }
+  return { root, profilePath, suitePath, manifestPath, manifest, suite }
 }
 
 function runTransportFixture(paths) {
@@ -178,6 +189,49 @@ test('transport conformance rejects a declared target that the live probe does n
   }
 })
 
+test('transport conformance rejects blank lines around its one JSONL response', async () => {
+  const paths = await writeFixture(
+    resolve(testRoot, 'fixtures/hanging-provider.mjs'),
+    1000,
+    ' A ',
+    true,
+  )
+  try {
+    paths.manifest.implementations[0].transportSchemaProbe.args = [
+      resolve(testRoot, 'fixtures/blank-lines-transport-schema-probe.mjs'),
+    ]
+    await writeFile(paths.manifestPath, JSON.stringify(paths.manifest))
+    const result = runTransportFixture(paths)
+    assert.equal(result.error, undefined)
+    assert.equal(result.status, 1)
+    assert.match(result.stderr, /must return exactly one JSONL response/)
+  } finally {
+    await rm(paths.root, { recursive: true, force: true })
+  }
+})
+
+test('transport conformance rejects a probe cwd that escapes through a symlink', async () => {
+  const paths = await writeFixture(
+    resolve(testRoot, 'fixtures/hanging-provider.mjs'),
+    1000,
+    ' A ',
+    true,
+  )
+  const outside = await mkdtemp(resolve(tmpdir(), 'capability-probe-cwd-test-'))
+  try {
+    await symlink(outside, resolve(paths.root, 'escaped-cwd'))
+    paths.manifest.implementations[0].transportSchemaProbe.cwd = 'escaped-cwd'
+    await writeFile(paths.manifestPath, JSON.stringify(paths.manifest))
+    const result = runTransportFixture(paths)
+    assert.equal(result.error, undefined)
+    assert.equal(result.status, 1)
+    assert.match(result.stderr, /transport schema probe cwd escapes the provider root/)
+  } finally {
+    await rm(paths.root, { recursive: true, force: true })
+    await rm(outside, { recursive: true, force: true })
+  }
+})
+
 function runFixture(paths, profileFlag = '--profile') {
   return spawnSync(
     process.execPath,
@@ -208,6 +262,53 @@ test('a timed-out provider is terminated and the runner returns', async () => {
   }
 })
 
+test('canonical conformance rejects an adapter cwd that escapes through a symlink', async () => {
+  const paths = await writeFixture(resolve(testRoot, 'fixtures/hanging-provider.mjs'), 1000)
+  const outside = await mkdtemp(resolve(tmpdir(), 'capability-adapter-cwd-test-'))
+  try {
+    await symlink(outside, resolve(paths.root, 'escaped-cwd'))
+    paths.manifest.implementations[0].adapter.cwd = 'escaped-cwd'
+    await writeFile(paths.manifestPath, JSON.stringify(paths.manifest))
+    const result = runFixture(paths)
+    assert.equal(result.error, undefined)
+    assert.equal(result.status, 1)
+    assert.match(result.stderr, /provider adapter cwd escapes the provider root/)
+  } finally {
+    await rm(paths.root, { recursive: true, force: true })
+    await rm(outside, { recursive: true, force: true })
+  }
+})
+
+test('canonical conformance rejects unknown and duplicate command-line flags', async () => {
+  const paths = await writeFixture(resolve(testRoot, 'fixtures/hanging-provider.mjs'), 1000)
+  try {
+    const baseArgs = [
+      runnerPath,
+      '--profile', paths.profilePath,
+      '--suite', paths.suitePath,
+      '--manifest', paths.manifestPath,
+      '--provider-root', paths.root,
+    ]
+    const unknown = spawnSync(
+      process.execPath,
+      [...baseArgs, '--profiel', paths.profilePath],
+      { cwd: repositoryRoot, encoding: 'utf8', timeout: 5000 },
+    )
+    assert.equal(unknown.status, 1)
+    assert.match(unknown.stderr, /Unknown --profiel/)
+
+    const duplicate = spawnSync(
+      process.execPath,
+      [...baseArgs, '--suite', paths.suitePath],
+      { cwd: repositoryRoot, encoding: 'utf8', timeout: 5000 },
+    )
+    assert.equal(duplicate.status, 1)
+    assert.match(duplicate.stderr, /Duplicate --suite/)
+  } finally {
+    await rm(paths.root, { recursive: true, force: true })
+  }
+})
+
 test('a contradictory provider response envelope is rejected', async () => {
   const paths = await writeFixture(
     resolve(testRoot, 'fixtures/invalid-envelope-provider.mjs'),
@@ -218,6 +319,40 @@ test('a contradictory provider response envelope is rejected', async () => {
     assert.equal(result.error, undefined)
     assert.equal(result.status, 1)
     assert.match(result.stderr, /invalid provider response fields/)
+  } finally {
+    await rm(paths.root, { recursive: true, force: true })
+  }
+})
+
+test('a provider error cannot add undeclared envelope fields', async () => {
+  const paths = await writeFixture(
+    resolve(testRoot, 'fixtures/invalid-error-fields-provider.mjs'),
+    1000,
+  )
+  try {
+    paths.suite.cases[0].expect = { outcome: 'error', code: 'PROVIDER_FAILED' }
+    await writeFile(paths.suitePath, JSON.stringify(paths.suite))
+    const result = runFixture(paths)
+    assert.equal(result.error, undefined)
+    assert.equal(result.status, 1)
+    assert.match(result.stderr, /invalid provider error envelope/)
+  } finally {
+    await rm(paths.root, { recursive: true, force: true })
+  }
+})
+
+test('an echoed retryable value must match the Capability Profile', async () => {
+  const paths = await writeFixture(
+    resolve(testRoot, 'fixtures/mismatched-retryable-provider.mjs'),
+    1000,
+  )
+  try {
+    paths.suite.cases[0].expect = { outcome: 'error', code: 'PROVIDER_FAILED' }
+    await writeFile(paths.suitePath, JSON.stringify(paths.suite))
+    const result = runFixture(paths)
+    assert.equal(result.error, undefined)
+    assert.equal(result.status, 1)
+    assert.match(result.stderr, /differs from the Capability Profile/)
   } finally {
     await rm(paths.root, { recursive: true, force: true })
   }

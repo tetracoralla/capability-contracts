@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "openadam.capability-profile.v0.3",
+  "id": "org.openadam.projective.transform",
+  "version": "0.2.0",
+  "title": "Inspect and render an explicit projective transform",
+  "summary": "Validate a strict four-corner ProjectiveSpec or render a bounded local raster through it without inferring planes, corners, or camera geometry.",
+  "lifecycle": "experimental",
+  "operations": [
+    {
+      "id": "inspect",
+      "title": "Inspect projective geometry",
+      "description": "Validate and solve one caller-supplied ProjectiveSpec, preserving strict TL, TR, BR, BL corner order and returning compact geometry evidence.",
+      "semantics": {
+        "resultVariability": "deterministic",
+        "contextSources": [],
+        "stateAccess": "none",
+        "idempotency": "idempotent",
+        "openWorld": false,
+        "ambiguity": "reject",
+        "provenance": "not-applicable"
+      },
+      "inputSchema": { "$ref": "./schemas/projective.inspect.v0.1.input.schema.json" },
+      "outputSchema": { "$ref": "./schemas/projective.inspect.v0.1.output.schema.json" },
+      "errors": [
+        { "code": "INVALID_INPUT", "description": "The request or ProjectiveSpec shape is invalid.", "retryable": false },
+        { "code": "INVALID_GEOMETRY", "description": "The explicit quad is self-intersecting, concave, mirrored, degenerate, singular, or crosses the projective horizon.", "retryable": false },
+        { "code": "PROVIDER_FAILED", "description": "The provider could not safely complete the operation.", "retryable": true }
+      ]
+    },
+    {
+      "id": "render",
+      "title": "Render projective raster",
+      "description": "Inverse-map a bounded local PNG, JPEG, or WebP through an explicit ProjectiveSpec and atomically publish a PNG. This operation does not detect a plane or choose corners.",
+      "semantics": {
+        "resultVariability": "deterministic",
+        "contextSources": ["referenced-resource"],
+        "stateAccess": "destructive",
+        "idempotency": "non-idempotent",
+        "openWorld": false,
+        "ambiguity": "reject",
+        "provenance": "not-applicable"
+      },
+      "inputSchema": { "$ref": "./schemas/projective.render.v0.1.input.schema.json" },
+      "outputSchema": { "$ref": "./schemas/projective.render.v0.1.output.schema.json" },
+      "errors": [
+        { "code": "INVALID_INPUT", "description": "The request or ProjectiveSpec shape is invalid.", "retryable": false },
+        { "code": "INVALID_GEOMETRY", "description": "The explicit quad is self-intersecting, concave, mirrored, degenerate, singular, or crosses the projective horizon.", "retryable": false },
+        { "code": "SOURCE_NOT_FOUND", "description": "The named local raster does not exist.", "retryable": false },
+        { "code": "PATH_FORBIDDEN", "description": "A path escapes or violates the explicit workspace grant.", "retryable": false },
+        { "code": "IMAGE_INVALID", "description": "The source is not a supported or decodable raster.", "retryable": false },
+        { "code": "OUTPUT_EXISTS", "description": "The output already exists and overwrite was not authorized.", "retryable": false },
+        { "code": "OUTPUT_INVALID", "description": "The output cannot be rendered or atomically published.", "retryable": false },
+        { "code": "LIMIT_EXCEEDED", "description": "A fixed source, output, memory, or response bound was exceeded.", "retryable": false },
+        { "code": "TIMEOUT", "description": "The bounded render exceeded its whole-call deadline.", "retryable": true },
+        { "code": "PROVIDER_FAILED", "description": "The provider could not safely complete the operation.", "retryable": true }
+      ]
+    }
+  ]
+}

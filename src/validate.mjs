@@ -4,6 +4,7 @@ import { resolve } from 'node:path'
 import { loadJson, validateContractSet } from './lib/contracts.mjs'
 
 function parseArgs(argv) {
+  const allowed = new Set(['profile', 'definition', 'suite', 'manifest'])
   const values = new Map()
   for (let index = 0; index < argv.length; index += 2) {
     const flag = argv[index]
@@ -14,7 +15,10 @@ function parseArgs(argv) {
         + '(legacy: --definition FILE)',
       )
     }
-    values.set(flag.slice(2), value)
+    const name = flag.slice(2)
+    if (!allowed.has(name)) throw new Error(`Unknown --${name}`)
+    if (values.has(name)) throw new Error(`Duplicate --${name}`)
+    values.set(name, value)
   }
   if (values.has('profile') === values.has('definition')) {
     throw new Error('Exactly one of --profile or legacy --definition is required')

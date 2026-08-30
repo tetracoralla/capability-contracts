@@ -6,6 +6,7 @@ import {
   canonicalJson,
   loadJson,
   parseJson,
+  resolveContainedRealPath,
   schemaDigest,
   validateContractSet,
 } from './lib/contracts.mjs'
@@ -15,6 +16,7 @@ const maxStderrBytes = 64 * 1024
 const timeoutMs = 10000
 
 function parseArgs(argv) {
+  const allowed = new Set(['profile', 'suite', 'manifest', 'provider-root'])
   const values = new Map()
   for (let index = 0; index < argv.length; index += 2) {
     const flag = argv[index]
@@ -25,7 +27,10 @@ function parseArgs(argv) {
         + '--manifest FILE --provider-root DIR',
       )
     }
-    values.set(flag.slice(2), value)
+    const name = flag.slice(2)
+    if (!allowed.has(name)) throw new Error(`Unknown --${name}`)
+    if (values.has(name)) throw new Error(`Duplicate --${name}`)
+    values.set(name, value)
   }
   for (const required of ['profile', 'suite', 'manifest', 'provider-root']) {
     if (!values.has(required)) throw new Error(`Missing --${required}`)
@@ -97,11 +102,13 @@ async function main() {
     throw new Error('provider manifest has no executable transport schema probe')
   }
 
-  const providerRoot = resolve(args.get('provider-root'))
-  const probeCwd = resolve(providerRoot, probe.cwd ?? '.')
-  if (probeCwd !== providerRoot && !probeCwd.startsWith(`${providerRoot}/`)) {
-    throw new Error('transport schema probe cwd escapes the provider root')
-  }
+  const providerRootPath = resolve(args.get('provider-root'))
+  const probeCwdPath = resolve(providerRootPath, probe.cwd ?? '.')
+  const { root: providerRoot, path: probeCwd } = await resolveContainedRealPath(
+    providerRootPath,
+    probeCwdPath,
+    'transport schema probe cwd escapes the provider root',
+  )
   const child = spawn(probe.command, probe.args, {
     cwd: probeCwd,
     env: { ...process.env, OPENADAM_PROVIDER_ROOT: providerRoot },
@@ -151,8 +158,13 @@ async function main() {
   if (Buffer.byteLength(stdout) > maxLineBytes) {
     throw new Error(`transport schema probe response exceeds ${maxLineBytes} bytes`)
   }
-  const lines = stdout.split('\n').filter((line) => line !== '')
-  if (lines.length !== 1) throw new Error('transport schema probe must return exactly one JSONL response')
+  if (!stdout.endsWith('\n')) {
+    throw new Error('transport schema probe ended with a partial response line')
+  }
+  const lines = stdout.slice(0, -1).split('\n')
+  if (lines.length !== 1 || lines[0] === '') {
+    throw new Error('transport schema probe must return exactly one JSONL response')
+  }
   assertProbeResponse(parseJson(lines[0], 'transport schema probe response'), profile, validated.implementation)
   console.log(
     `PASS live-transport-binding provider=${manifest.provider.id}@${manifest.provider.version} `

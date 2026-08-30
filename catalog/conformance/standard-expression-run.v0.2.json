@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "openadam.conformance-suite.v0.2",
+  "capabilityId": "org.openadam.standard-expression.run",
+  "capabilityVersion": "0.2.0",
+  "claimLevel": "L0",
+  "cases": [
+    {
+      "id": "normalize-semver-range",
+      "operationId": "run",
+      "description": "Normalize one explicit npm SemVer range without changing its meaning.",
+      "input": {
+        "op": "normalize",
+        "kind": "semver_range",
+        "expression": "^1.2.3"
+      },
+      "expect": {
+        "outcome": "success",
+        "match": "subset",
+        "value": {
+          "ok": true,
+          "operation": "normalize",
+          "input": "^1.2.3",
+          "kind": "semver_range",
+          "dialect": "npm",
+          "normalized": ">=1.2.3 <2.0.0-0",
+          "diagnostics": [],
+          "provenance": {
+            "spec": "Semantic-Versioning-2.0.0/npm-range",
+            "compatibility_mode": "npm-strict"
+          }
+        }
+      }
+    }
+  ]
+}

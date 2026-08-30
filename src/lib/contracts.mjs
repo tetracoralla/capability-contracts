@@ -1,5 +1,5 @@
-import { readFile } from 'node:fs/promises'
-import { dirname, isAbsolute, resolve } from 'node:path'
+import { readFile, realpath } from 'node:fs/promises'
+import { dirname, isAbsolute, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createHash } from 'node:crypto'
 import Ajv from 'ajv'
@@ -14,6 +14,7 @@ const schemaFiles = new Map([
   ['openadam.capability-profile.v0.3', 'schemas/capability-profile.schema.v0.3.json'],
   ['openadam.provider-manifest.v0.1', 'schemas/provider-manifest.schema.json'],
   ['openadam.provider-manifest.v0.2', 'schemas/provider-manifest.schema.v0.2.json'],
+  ['openadam.provider-manifest.v0.3', 'schemas/provider-manifest.schema.v0.3.json'],
   ['openadam.conformance-suite.v0.1', 'schemas/conformance-suite.schema.json'],
   ['openadam.conformance-suite.v0.2', 'schemas/conformance-suite.schema.v0.2.json'],
 ])
@@ -25,7 +26,36 @@ export async function loadJson(path) {
 
 export function parseJson(source, label = 'JSON') {
   assertNoDuplicateObjectKeys(source, label)
-  return JSON.parse(source)
+  const value = JSON.parse(source)
+  assertJsonDataModel(value, label)
+  return value
+}
+
+function assertJsonDataModel(value, label) {
+  if (value === null || typeof value === 'boolean') return
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) throw new Error(`${label}: JSON number must be finite`)
+    return
+  }
+  if (typeof value === 'string') {
+    assertUnicodeScalarString(value)
+    return
+  }
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      if (!Object.hasOwn(value, index)) throw new Error(`${label}: sparse arrays are not permitted`)
+      assertJsonDataModel(value[index], label)
+    }
+    return
+  }
+  if (typeof value === 'object') {
+    for (const [key, item] of Object.entries(value)) {
+      assertUnicodeScalarString(key)
+      assertJsonDataModel(item, label)
+    }
+    return
+  }
+  throw new Error(`${label}: unsupported JSON value ${typeof value}`)
 }
 
 function assertNoDuplicateObjectKeys(source, label) {
@@ -59,7 +89,20 @@ function assertNoDuplicateObjectKeys(source, label) {
       parseString()
       return
     }
+    const start = offset
     while (offset < source.length && !/[\s,\]}]/u.test(source[offset])) offset += 1
+    const token = source.slice(start, offset)
+    if (/^-?(?:0|[1-9][0-9]*)$/u.test(token)) {
+      const integer = BigInt(token)
+      if (integer > BigInt(Number.MAX_SAFE_INTEGER) || integer < BigInt(Number.MIN_SAFE_INTEGER)) {
+        throw new Error(`${label}: JSON integer must be within the IEEE-754 safe range or encoded as a string`)
+      }
+    } else if (/^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$/u.test(token)) {
+      const number = Number(token)
+      if (Number.isInteger(number) && !Number.isSafeInteger(number) && Math.abs(number) < 1e21) {
+        throw new Error(`${label}: JSON integer-valued number loses IEEE-754 precision and must be encoded as a string`)
+      }
+    }
   }
 
   function parseObject() {
@@ -141,6 +184,13 @@ export function canonicalJson(value) {
   if (value === null || typeof value === 'boolean') return JSON.stringify(value)
   if (typeof value === 'number') {
     if (!Number.isFinite(value)) throw new Error('JCS does not permit non-finite numbers')
+    if (
+      Number.isInteger(value)
+      && !Number.isSafeInteger(value)
+      && Math.abs(value) < 1e21
+    ) {
+      throw new Error('JCS requires unsafe integers to be encoded as strings')
+    }
     return JSON.stringify(value)
   }
   if (typeof value === 'string') {
@@ -199,10 +249,33 @@ async function resolveOperationSchema(schema, profileBase, label) {
   }
   const schemaPath = resolve(profileBase, reference)
   const allowedRoot = resolve(profileBase, '..')
-  if (schemaPath !== allowedRoot && !schemaPath.startsWith(`${allowedRoot}/`)) {
-    throw new Error(`${label}: schema reference escapes the catalog capability root`)
+  const { path: containedSchemaPath } = await resolveContainedRealPath(
+    allowedRoot,
+    schemaPath,
+    `${label}: schema reference escapes the catalog capability root`,
+  )
+  return loadJson(containedSchemaPath)
+}
+
+export async function resolveContainedRealPath(rootPath, candidatePath, errorMessage) {
+  function isOutside(root, candidate) {
+    const relativePath = relative(root, candidate)
+    return (
+      relativePath === '..'
+      || relativePath.startsWith(`..${process.platform === 'win32' ? '\\' : '/'}`)
+      || isAbsolute(relativePath)
+    )
   }
-  return loadJson(schemaPath)
+
+  const lexicalRoot = resolve(rootPath)
+  const lexicalCandidate = resolve(candidatePath)
+  if (isOutside(lexicalRoot, lexicalCandidate)) throw new Error(errorMessage)
+  const [canonicalRoot, canonicalCandidate] = await Promise.all([
+    realpath(lexicalRoot),
+    realpath(lexicalCandidate),
+  ])
+  if (isOutside(canonicalRoot, canonicalCandidate)) throw new Error(errorMessage)
+  return { root: canonicalRoot, path: canonicalCandidate }
 }
 
 export async function resolveOperationSchemas(profile, profilePath) {
@@ -223,6 +296,20 @@ export async function resolveOperationSchemas(profile, profilePath) {
     })
   }
   return resolved
+}
+
+export async function capabilityProfileDigest(profile, profilePath) {
+  const operationSchemas = await resolveOperationSchemas(profile, profilePath)
+  const { $schema: ignoredSchemaLocation, ...profileFields } = profile
+  void ignoredSchemaLocation
+  return schemaDigest({
+    ...profileFields,
+    operations: profile.operations.map((operation) => ({
+      ...operation,
+      inputSchema: operationSchemas.get(operation.id).input,
+      outputSchema: operationSchemas.get(operation.id).output,
+    })),
+  })
 }
 
 export function deepSubset(actual, expected) {
@@ -257,6 +344,10 @@ function assertUnique(values, label) {
   }
 }
 
+export function assertUniqueSemanticIdentities(documents, label) {
+  assertUnique(documents.map((document) => `${document.id}@${document.version}`), label)
+}
+
 export async function validateContractSet({
   profile,
   profilePath,
@@ -274,6 +365,14 @@ export async function validateContractSet({
   await validateDocument(resolvedProfile, 'capability profile')
   await validateDocument(suite, 'conformance suite')
   if (manifest !== undefined) await validateDocument(manifest, 'provider manifest')
+
+  if (
+    manifest !== undefined
+    && resolvedProfile.schemaVersion === 'openadam.capability-profile.v0.3'
+    && manifest.schemaVersion !== 'openadam.provider-manifest.v0.3'
+  ) {
+    throw new Error('current Capability Profiles require Provider Manifest v0.3 semantic binding')
+  }
 
   if (
     suite.capabilityId !== resolvedProfile.id ||
@@ -381,6 +480,15 @@ export async function validateContractSet({
       `provider ${manifest.provider.id} does not implement ${resolvedProfile.id}@${resolvedProfile.version}`,
     )
   }
+  if (manifest.schemaVersion === 'openadam.provider-manifest.v0.3') {
+    const expectedProfileDigest = await capabilityProfileDigest(
+      resolvedProfile,
+      resolvedProfilePath,
+    )
+    if (implementation.profileDigest !== expectedProfileDigest) {
+      throw new Error('provider profile digest differs from the Capability Profile')
+    }
+  }
   if (implementation.adapter.cwd !== undefined && isAbsolute(implementation.adapter.cwd)) {
     throw new Error('provider adapter cwd must be relative to the provider root')
   }
@@ -428,6 +536,17 @@ export async function validateContractSet({
     }
     if (binding.contractSchemaDigests.output !== schemaDigest(schemas.output)) {
       throw new Error(`${operationId}: provider output schema digest differs from capability contract`)
+    }
+    if (manifest.schemaVersion === 'openadam.provider-manifest.v0.3') {
+      const expectedAnnotations = {
+        readOnlyHint: ['none', 'read'].includes(operation.semantics.stateAccess),
+        destructiveHint: operation.semantics.stateAccess === 'destructive',
+        idempotentHint: operation.semantics.idempotency === 'idempotent',
+        openWorldHint: operation.semantics.openWorld,
+      }
+      if (canonicalJson(binding.annotations) !== canonicalJson(expectedAnnotations)) {
+        throw new Error(`${operationId}: provider annotations differ from Capability semantics`)
+      }
     }
   }
   return { implementation, operationSchemas }

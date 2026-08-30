@@ -17,8 +17,9 @@ tooling. It has no end-user interface and does not run an Agent.
   input, output, behavior, stable errors, and conformance references.
 - **Capability Provider** — an independent product or service implementing one
   or more Profiles.
-- **Provider Manifest** — one provider's version, adapter, transport bindings,
-  targets, schema digests, and optional live schema probe.
+- **Provider Manifest** — one provider's version, complete resolved-Profile
+  digest, adapter, transport bindings, targets, schema digests,
+  semantics-derived annotations, and optional live schema probe.
 - **Execution Result** — one portable semantic output. Runtime metadata belongs
   here only when callers need it to interpret the result.
 - **Conformance Suite** — executable examples and properties scoped to one
@@ -27,6 +28,10 @@ tooling. It has no end-user interface and does not run an Agent.
 New Profiles use `openadam.capability-profile.v0.3`. The v0.1 and v0.2 document
 families are compatibility inputs, not templates for new catalog entries.
 Document format versions and Capability semantic versions are independent.
+Cataloged or consumed `id@version` semantics are immutable. Corrections that
+change caller-visible meaning, errors, state effects, ambiguity, or schemas use
+a new semantic version; implementation-only optimization remains provider
+work when the bound meaning is conserved.
 
 ## Relationship to Procedure and providers
 
@@ -46,6 +51,12 @@ redefine Capability input or output semantics. A Provider Manifest does not own
 Profile meaning. A transport such as MCP is a replaceable binding and never
 becomes the Capability identity.
 
+For the current document family, a provider binds the complete resolved
+Profile rather than only its operation schemas. This makes changes to behavior,
+stable errors, lifecycle, or semantics observable even when input and output
+schema bytes did not change. Manifest annotations are checked projections of
+Profile semantics, not independent safety authority.
+
 ## Semantic waist
 
 The ABI standardizes only:
@@ -56,10 +67,22 @@ The ABI standardizes only:
 4. stable error meaning;
 5. executable conformance references.
 
+The canonical `openadam.capability-jsonl.v0.1` adapter envelope permits an
+error object with exact fields `{code,message}` or
+`{code,message,retryable}`. The Profile, not the adapter, owns retryability. If
+the adapter echoes `retryable`, it must equal the declared error value; a host
+derives its portable result from the Profile in either case.
+
 Provider commands, endpoints, transport targets, deployment, latency, cost,
 credentials, and live transport digests belong in Provider Manifests or owning
 systems. UI labels, copy, aliases, and share links remain provider product
 concerns.
+
+Malformed adapter envelopes, unsupported carrier operations, process startup,
+connection loss, and other provider-infrastructure failures are carrier
+failures. They do not become stable Capability errors unless independent
+providers and callers require the same distinction to preserve semantic
+meaning.
 
 Invocation ids, timings, traces, and runtime provenance belong in a semantic
 result only when they change how a caller must understand or use it. Otherwise

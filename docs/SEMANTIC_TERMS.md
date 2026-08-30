@@ -53,6 +53,14 @@ transient condition changes. Invalid or ambiguous input and a fixed request,
 dimension, pixel, memory, or response limit are not retryable without changing
 the input or configured bound.
 
+At the `openadam.capability-jsonl.v0.1` adapter boundary, `retryable` is an
+optional compatibility echo. Error objects have exactly `code` and `message`,
+with optional `retryable`; no other fields are portable. When present, the
+value must equal the matching Profile error declaration. A conforming host
+uses the Profile declaration as authority and therefore produces the same
+portable retryability whether an older adapter omits the echo or a newer one
+includes it.
+
 ## Adapter and transport evidence
 
 Canonical adapter conformance validates the provider's Capability JSONL adapter
@@ -60,12 +68,18 @@ against canonical requests and results. It validates declared contract schema
 digests, but does not execute or introspect the manifest's MCP, CLI, HTTP, or
 library target.
 
-Live transport binding conformance is a separate lane. Provider Manifest v0.2
+Live transport binding conformance is a separate lane. Provider Manifest v0.3
 declares an executable schema probe. The reference runner asks that current
 probe for operation identity, transport, target, and live input/output schemas,
 then compares them with `transportSchemaDigests`. A probe pass covers only the
 observed binding; it does not establish installed-host availability, Agent
 routing, semantic correctness, or substitution.
+
+Provider Manifest v0.3 binds the complete resolved Profile through
+`profileDigest`. The manifest annotations are deterministic projections of
+Profile semantics: read-only from `stateAccess`, destructive from destructive
+state access, idempotent from `idempotency`, and open-world from `openWorld`.
+They cannot weaken or replace the Profile.
 
 ## Conformance claim levels
 

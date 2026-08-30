@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "openadam.capability-profile.v0.3",
+  "id": "org.openadam.standard-expression.run",
+  "version": "0.1.0",
+  "title": "Run a standard-expression operation",
+  "summary": "Interpret, validate, normalize, query, convert, or explicitly detect one supported standard expression without guessing its language or dialect.",
+  "lifecycle": "experimental",
+  "operations": [
+    {
+      "id": "run",
+      "title": "Run standard-expression semantics",
+      "description": "Apply one explicit operation to Cron, npm SemVer range, CIDR, RFC 3986 URI, HTTP Content-Type, ISO 8601 duration, RFC 5545 RRULE, or Unix permission syntax. Detection returns candidates instead of silently selecting a kind, and time-relative work requires explicit context.",
+      "semantics": {
+        "resultVariability": "deterministic",
+        "contextSources": ["runtime"],
+        "stateAccess": "none",
+        "idempotency": "idempotent",
+        "openWorld": false,
+        "ambiguity": "return-candidates",
+        "provenance": "optional"
+      },
+      "inputSchema": {
+        "$ref": "./schemas/standard-expression.run.v0.1.input.schema.json"
+      },
+      "outputSchema": {
+        "$ref": "./schemas/standard-expression.run.v0.1.output.schema.json"
+      },
+      "errors": [
+        {
+          "code": "ADAPTER_INVALID_REQUEST",
+          "description": "The Capability adapter request envelope or operation selection is invalid.",
+          "retryable": false
+        },
+        {
+          "code": "PROVIDER_ERROR",
+          "description": "The provider could not return a structured semantic result.",
+          "retryable": false
+        }
+      ]
+    }
+  ]
+}
