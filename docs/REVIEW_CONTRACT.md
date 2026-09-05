@@ -34,8 +34,10 @@ receipt is never authority over a changed live implementation.
   validation, schema resolution, and claim-level checks.
 - `src/run-conformance.mjs` owns the canonical Capability JSONL adapter lane.
   `src/run-transport-conformance.mjs` owns the separate live public-transport
-  schema lane. Neither runner establishes installed-host availability,
-  professional correctness, performance capacity, or human experience.
+  schema lane. `src/run-differential.mjs` owns bounded comparison between two
+  distinct Provider Manifests over one shared Differential Suite. None of the
+  runners establishes installed-host availability, professional correctness,
+  performance capacity, or human experience.
 - A provider repository owns its semantic core, adapter translation, product
   transport, limits, runtime behavior, UI, packaging, and release. A Provider
   Manifest declares those bindings; it does not transfer ownership here.
@@ -137,6 +139,18 @@ One provider passing L0/L1 supports only provider conformance to an experimental
 Profile. Do not say “interchangeable”, “substitutable”, or “standardized across
 providers” without the applicable L2/L3 evidence.
 
+A test-only independent implementation can reveal contract or provider drift,
+and can support semantic comparison without being a second released product.
+Assess implementation independence, applicable properties, the shared corpus,
+and comparison exceptions for that semantic claim. Assess distribution and
+live-use readiness separately for a product replacement claim; do not require
+an otherwise unused second product merely to obtain a conformance label.
+Differential cases must
+validate through both current manifests and result schemas. Ignored paths must
+be present in both results, non-overlapping, justified, and limited to
+Profile-declared context/provenance. That structural check does not establish
+the semantic acceptability of an ignored path; review the basis directly.
+
 ## Runner safety and adversarial matrix
 
 The canonical adapter runner must preserve all of these boundaries:
@@ -161,6 +175,18 @@ exactly the declared operation order/set, transport and target identity, and
 current input/output schema digests. Exercise missing probe, wrong target,
 wrong schema, extra/missing binding, duplicate keys, multi-line output, stderr
 overflow, timeout, non-zero exit, and path escape when that lane changes.
+
+The differential runner additionally requires distinct Provider ids, exact
+Profile identity, validated ordinary conformance bindings, one bounded session
+per Provider, exact success/error normalization, clean shutdown, and mismatch
+reporting by outcome plus canonical digest rather than result or stderr content.
+Exercise Provider disagreement, missing or overlapping ignored paths,
+schema-invalid output, undeclared errors, wrong correlation, timeout, early
+exit, partial lines, and one Provider failing while the other is cleaned up.
+The independent Python witness must select one explicit versioned zoneinfo data
+root, report that selected database rather than an unrelated installed package,
+reject malformed carrier input without inventing a semantic error envelope, and
+remain live after typed `INVALID_INPUT` requests.
 
 Reference conformance is deliberately sequential and claim-oriented. It is not
 a provider load test. A Profile or runner change that targets scale must publish
@@ -208,6 +234,20 @@ lists; live public-transport evidence exists only for pilots on which the script
 also ran the transport probe. It does not establish that a plugin is installed,
 an Agent naturally routed to it, the human product works, or two providers are
 substitutable.
+If a listed source product is unavailable, the runner must report that pilot as
+`not_run` and exit incomplete rather than throwing an unclassified process error
+or substituting an installed Host artifact. Explicit root overrides must be
+absolute.
+
+For the current independent time-zone witness run:
+
+```sh
+npm run check:time-zone-differential
+```
+
+Its 12-case PASS is a narrow differential observation. It does not establish a
+second released Provider product, L2 properties, L3 substitution, a live
+public transport, an installed Host route, or user value.
 
 Report separately:
 

@@ -36,9 +36,9 @@ can execute already-closed calls after validating their current bindings.
 - executable conformance suites;
 - bounded reference validators and conformance runners.
 
-A provider remains an independent product with its own source, release,
-transport, limits, and user experience. MCP is one possible binding, not the
-identity of a Capability.
+An independently useful provider product owns its source, release, transport,
+limits, and user experience. A conformance witness need not become a separate
+product. MCP is one possible binding, not the identity of a Capability.
 
 ## Current status
 
@@ -47,6 +47,7 @@ The current document family is experimental:
 - `openadam.capability-profile.v0.3`;
 - `openadam.provider-manifest.v0.3`;
 - `openadam.conformance-suite.v0.2`;
+- `openadam.differential-suite.v0.1` for bounded cross-provider comparison;
 - `openadam.capability-jsonl.v0.1` for the reference adapter boundary, defined
   by `schemas/capability-jsonl-envelope.schema.v0.1.json`.
 
@@ -68,10 +69,16 @@ provider-infrastructure failures from the stable semantic error set. Those
 failures remain at the adapter boundary rather than becoming portable domain
 meaning.
 
-Each Profile currently has one originating provider. That is enough to test
-the ABI and one adapter against declared examples, but not enough to claim
-cross-provider substitution. Such a claim requires two independent providers
-for the same Profile and applicable property and differential coverage.
+Current Profiles remain provider-seeded. Time-zone conversion
+now also has an independently implemented Python `zoneinfo` conformance witness
+and a 12-case shared differential suite. The frozen corpus retains
+invalid-calendar agreement as a continuing regression. The optional generated
+corpus and Host experiment add bounded semantic and consumer observations; the
+Profile's ordinary suite remains L0. An independent engine witness can support
+scoped semantic substitution evidence without becoming a released product.
+That does not establish a deployable replacement or user adoption. See
+[Differential conformance](docs/DIFFERENTIAL_CONFORMANCE.md) for the separate
+claim boundaries and current coverage.
 
 See [Public integrations](docs/INTEGRATIONS.md) for the provider boundary and
 which current implementations are independently public.
@@ -107,6 +114,15 @@ Contains bounded, executable cases for one Profile. Levels are claim-sized:
 A provider-authored result or trace cannot promote itself into a higher-level
 correctness, effect, or business claim.
 
+### Differential Suite
+
+Contains shared typed inputs for two distinct Provider Manifests implementing
+one exact Profile. The runner validates both complete bindings, executes both
+real Capability JSONL adapters, validates every result/error against the
+Profile, and compares canonical semantic outcomes. Any deliberately ignored
+runtime/provenance path is explicit and carries a reviewable basis; the runner
+never treats that basis as proof that ignoring the path is semantically safe.
+
 ## Use from source
 
 Requires Node.js 22 or newer.
@@ -135,10 +151,25 @@ node src/run-conformance.mjs \
   --provider-root /path/to/provider
 ```
 
+Run the current independent time-zone implementation comparison:
+
+```sh
+npm run check:time-zone-differential
+```
+
+This maintainer-local command expects the sibling Migratory Time checkout and
+Python 3 with IANA `zoneinfo`. An isolated checkout may set the absolute
+`OPENADAM_MIGRATORY_TIME_SOURCE_ROOT`; a missing source is reported as
+`not_run/incomplete`. This is an executable current-source observation, not a
+public provider release or L3 substitution certification.
+
 `npm run check:local-pilots` is a maintainer-only workspace check. It expects
 specific sibling provider checkouts, some of which are not public. It is not a
 prerequisite for using or contributing to this repository and its output is
-not a substitution or production-readiness claim.
+not a substitution or production-readiness claim. Every pilot accepts the
+explicit absolute source-root variable named by its missing-input report. A
+missing checkout is reported as `not_run`, the command exits incomplete, and no
+installed Host artifact is silently substituted for current-source conformance.
 
 ## Versioning and compatibility
 

@@ -17,6 +17,7 @@ const schemaFiles = new Map([
   ['openadam.provider-manifest.v0.3', 'schemas/provider-manifest.schema.v0.3.json'],
   ['openadam.conformance-suite.v0.1', 'schemas/conformance-suite.schema.json'],
   ['openadam.conformance-suite.v0.2', 'schemas/conformance-suite.schema.v0.2.json'],
+  ['openadam.differential-suite.v0.1', 'schemas/differential-suite.schema.v0.1.json'],
 ])
 
 export async function loadJson(path) {
@@ -550,4 +551,94 @@ export async function validateContractSet({
     }
   }
   return { implementation, operationSchemas }
+}
+
+export async function validateDifferentialSuite({ profile, profilePath, suite }) {
+  await validateDocument(profile, 'capability profile')
+  await validateDocument(suite, 'differential suite')
+  if (
+    suite.capabilityId !== profile.id
+    || suite.capabilityVersion !== profile.version
+  ) {
+    throw new Error('differential suite capability identity does not match profile')
+  }
+  assertUnique(suite.cases.map((testCase) => testCase.id), 'differential cases')
+  const operations = new Map(profile.operations.map((operation) => [operation.id, operation]))
+  const operationSchemas = await resolveOperationSchemas(profile, profilePath)
+  const allowedIgnoredPaths = new Map()
+  for (const ignoredPath of suite.comparisonPolicy.ignoredResultPaths) {
+    const operation = operations.get(ignoredPath.operationId)
+    if (operation === undefined) {
+      throw new Error(
+        `differential comparison policy: unknown operation ${ignoredPath.operationId}`,
+      )
+    }
+    if (
+      ignoredPath.semanticRole === 'runtime-context'
+      && (
+        !operation.semantics.contextSources.includes('runtime')
+        || !ignoredPath.pointer.startsWith('/context/')
+      )
+    ) {
+      throw new Error(
+        `differential comparison policy: ${ignoredPath.pointer} is not a `
+        + `Profile-declared runtime context path for ${ignoredPath.operationId}`,
+      )
+    }
+    if (
+      ignoredPath.semanticRole === 'provenance'
+      && (
+        operation.semantics.provenance === 'not-applicable'
+        || !ignoredPath.pointer.startsWith('/provenance/')
+      )
+    ) {
+      throw new Error(
+        `differential comparison policy: ${ignoredPath.pointer} is not a `
+        + `Profile-declared provenance path for ${ignoredPath.operationId}`,
+      )
+    }
+    const key = `${ignoredPath.operationId}\u0000${ignoredPath.pointer}`
+    if (allowedIgnoredPaths.has(key)) {
+      throw new Error(
+        `differential comparison policy: duplicate ignored path ${ignoredPath.pointer} `
+        + `for ${ignoredPath.operationId}`,
+      )
+    }
+    allowedIgnoredPaths.set(key, ignoredPath)
+  }
+  for (const testCase of suite.cases) {
+    const operation = operations.get(testCase.operationId)
+    if (operation === undefined) {
+      throw new Error(
+        `differential case ${testCase.id}: unknown operation ${testCase.operationId}`,
+      )
+    }
+    validateAgainstSchema(
+      operationSchemas.get(operation.id).input,
+      testCase.input,
+      `differential case ${testCase.id} input`,
+    )
+    const pointers = testCase.comparison.ignorePointers
+    for (let left = 0; left < pointers.length; left += 1) {
+      for (let right = left + 1; right < pointers.length; right += 1) {
+        if (
+          pointers[left].startsWith(`${pointers[right]}/`)
+          || pointers[right].startsWith(`${pointers[left]}/`)
+        ) {
+          throw new Error(
+            `differential case ${testCase.id}: ignored paths must not overlap`,
+          )
+        }
+      }
+    }
+    for (const pointer of pointers) {
+      if (!allowedIgnoredPaths.has(`${testCase.operationId}\u0000${pointer}`)) {
+        throw new Error(
+          `differential case ${testCase.id}: ignored path ${pointer} is not permitted by `
+          + 'the Profile-bound comparison policy',
+        )
+      }
+    }
+  }
+  return { operationSchemas }
 }

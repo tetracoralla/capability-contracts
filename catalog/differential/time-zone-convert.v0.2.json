@@ -1,0 +1,151 @@
+{
+  "schemaVersion": "openadam.differential-suite.v0.1",
+  "capabilityId": "org.openadam.time-zone.convert",
+  "capabilityVersion": "0.2.0",
+  "comparisonPolicy": {
+    "ignoredResultPaths": [
+      {
+        "operationId": "convert",
+        "pointer": "/context/timeZoneDatabase",
+        "semanticRole": "runtime-context",
+        "basis": "The Profile requires runtime time-zone database identity; provider labels may differ while all semantic conversion fields remain exact."
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "summer-target-order",
+      "operationId": "convert",
+      "description": "A modern summer conversion preserves ordered target semantics across engines.",
+      "input": {
+        "localDateTime": "2026-08-03T16:30",
+        "sourceTimeZone": "Asia/Shanghai",
+        "targetTimeZones": ["America/Los_Angeles", "Europe/London"]
+      },
+      "comparison": { "kind": "canonical-exact-except", "ignorePointers": ["/context/timeZoneDatabase"], "ignoredPathBasis": "The Profile requires runtime tzdb provenance; compare the semantic result exactly while allowing only the provider-reported database identifier." }
+    },
+    {
+      "id": "fall-back-candidates",
+      "operationId": "convert",
+      "description": "A repeated New York minute returns the same ordered earlier and later candidates.",
+      "input": {
+        "localDateTime": "2026-11-01T01:30",
+        "sourceTimeZone": "America/New_York",
+        "targetTimeZones": ["Asia/Shanghai"]
+      },
+      "comparison": { "kind": "canonical-exact-except", "ignorePointers": ["/context/timeZoneDatabase"], "ignoredPathBasis": "The Profile requires runtime tzdb provenance; compare the semantic result exactly while allowing only the provider-reported database identifier." }
+    },
+    {
+      "id": "fall-back-earlier",
+      "operationId": "convert",
+      "description": "Explicit earlier disambiguation selects the same instant and target result.",
+      "input": {
+        "localDateTime": "2026-11-01T01:30",
+        "sourceTimeZone": "America/New_York",
+        "targetTimeZones": ["Asia/Shanghai"],
+        "disambiguation": "earlier"
+      },
+      "comparison": { "kind": "canonical-exact-except", "ignorePointers": ["/context/timeZoneDatabase"], "ignoredPathBasis": "The Profile requires runtime tzdb provenance; compare the semantic result exactly while allowing only the provider-reported database identifier." }
+    },
+    {
+      "id": "fall-back-later",
+      "operationId": "convert",
+      "description": "Explicit later disambiguation selects the same instant and target result.",
+      "input": {
+        "localDateTime": "2026-11-01T01:30",
+        "sourceTimeZone": "America/New_York",
+        "targetTimeZones": ["Asia/Shanghai"],
+        "disambiguation": "later"
+      },
+      "comparison": { "kind": "canonical-exact-except", "ignorePointers": ["/context/timeZoneDatabase"], "ignoredPathBasis": "The Profile requires runtime tzdb provenance; compare the semantic result exactly while allowing only the provider-reported database identifier." }
+    },
+    {
+      "id": "spring-gap",
+      "operationId": "convert",
+      "description": "A nonexistent New York minute remains nonexistent rather than being shifted.",
+      "input": {
+        "localDateTime": "2026-03-08T02:30",
+        "sourceTimeZone": "America/New_York",
+        "targetTimeZones": ["Asia/Shanghai"]
+      },
+      "comparison": { "kind": "canonical-exact-except", "ignorePointers": ["/context/timeZoneDatabase"], "ignoredPathBasis": "The Profile requires runtime tzdb provenance; compare the semantic result exactly while allowing only the provider-reported database identifier." }
+    },
+    {
+      "id": "half-hour-target",
+      "operationId": "convert",
+      "description": "A half-hour target offset is retained without rounding.",
+      "input": {
+        "localDateTime": "2026-01-15T12:00",
+        "sourceTimeZone": "UTC",
+        "targetTimeZones": ["Australia/Adelaide", "Asia/Kathmandu"]
+      },
+      "comparison": { "kind": "canonical-exact-except", "ignorePointers": ["/context/timeZoneDatabase"], "ignoredPathBasis": "The Profile requires runtime tzdb provenance; compare the semantic result exactly while allowing only the provider-reported database identifier." }
+    },
+    {
+      "id": "etc-sign-convention",
+      "operationId": "convert",
+      "description": "The IANA Etc fixed-offset sign convention is consistent across engines.",
+      "input": {
+        "localDateTime": "2026-08-03T12:00",
+        "sourceTimeZone": "UTC",
+        "targetTimeZones": ["Etc/GMT+5"]
+      },
+      "comparison": { "kind": "canonical-exact-except", "ignorePointers": ["/context/timeZoneDatabase"], "ignoredPathBasis": "The Profile requires runtime tzdb provenance; compare the semantic result exactly while allowing only the provider-reported database identifier." }
+    },
+    {
+      "id": "invalid-calendar-date",
+      "operationId": "convert",
+      "description": "A schema-shaped but impossible calendar date returns the same stable error code.",
+      "input": {
+        "localDateTime": "2026-02-30T12:00",
+        "sourceTimeZone": "UTC",
+        "targetTimeZones": ["Asia/Shanghai"]
+      },
+      "comparison": { "kind": "canonical-exact-except", "ignorePointers": [], "ignoredPathBasis": "No result fields are ignored; stable error outcome, code, and Profile-owned retryability are compared." }
+    },
+    {
+      "id": "unknown-zone",
+      "operationId": "convert",
+      "description": "An unknown named zone returns the same stable error code.",
+      "input": {
+        "localDateTime": "2026-08-03T12:00",
+        "sourceTimeZone": "Mars/Olympus",
+        "targetTimeZones": ["UTC"]
+      },
+      "comparison": { "kind": "canonical-exact-except", "ignorePointers": [], "ignoredPathBasis": "No result fields are ignored; stable error outcome, code, and Profile-owned retryability are compared." }
+    },
+    {
+      "id": "provider-year-boundary",
+      "operationId": "convert",
+      "description": "The currently tested lower-year boundary returns the same stable error code.",
+      "input": {
+        "localDateTime": "1900-12-31T12:00",
+        "sourceTimeZone": "Asia/Shanghai",
+        "targetTimeZones": ["Europe/London"]
+      },
+      "comparison": { "kind": "canonical-exact-except", "ignorePointers": [], "ignoredPathBasis": "No result fields are ignored; stable error outcome, code, and Profile-owned retryability are compared." }
+    },
+    {
+      "id": "shared-lower-year-supported",
+      "operationId": "convert",
+      "description": "The first year in the shared provider domain preserves the same nontrivial historical zone conversion used beside the rejected boundary.",
+      "input": {
+        "localDateTime": "1901-01-01T00:00",
+        "sourceTimeZone": "Asia/Shanghai",
+        "targetTimeZones": ["Europe/London"]
+      },
+      "comparison": { "kind": "canonical-exact-except", "ignorePointers": ["/context/timeZoneDatabase"], "ignoredPathBasis": "The Profile requires runtime tzdb provenance; compare the semantic result exactly while allowing only the provider-reported database identifier." }
+    },
+    {
+      "id": "sub-minute-offset",
+      "operationId": "convert",
+      "description": "A sub-minute historical offset returns the same stable precision error.",
+      "input": {
+        "localDateTime": "1971-01-01T12:00",
+        "sourceTimeZone": "Africa/Monrovia",
+        "targetTimeZones": ["UTC"]
+      },
+      "comparison": { "kind": "canonical-exact-except", "ignorePointers": [], "ignoredPathBasis": "No result fields are ignored; stable error outcome, code, and Profile-owned retryability are compared." }
+    }
+  ]
+}
