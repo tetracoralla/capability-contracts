@@ -14,6 +14,7 @@ import {
   schemaDigest,
   validateAgainstSchema,
   validateContractSet,
+  validateDifferentialSuite,
 } from '../src/lib/contracts.mjs'
 import { fileURLToPath } from 'node:url'
 
@@ -171,6 +172,109 @@ test('deepSubset keeps array ordering and permits extra object fields', () => {
 
 test('valid contract set passes', async () => {
   await validateContractSet({ profile, suite, manifest })
+})
+
+test('differential suites validate identity, cases, and Profile-shaped inputs', async () => {
+  const differentialSuite = {
+    schemaVersion: 'openadam.differential-suite.v0.1',
+    capabilityId: profile.id,
+    capabilityVersion: profile.version,
+    comparisonPolicy: { ignoredResultPaths: [] },
+    cases: [
+      {
+        id: 'basic',
+        operationId: 'normalize',
+        description: 'Compare the same normalization meaning across two implementations.',
+        input: { value: ' A ' },
+        comparison: {
+          kind: 'canonical-exact-except',
+          ignorePointers: [],
+          ignoredPathBasis: 'No fields are ignored.',
+        },
+      },
+    ],
+  }
+  await validateDifferentialSuite({ profile, suite: differentialSuite })
+
+  const mismatched = structuredClone(differentialSuite)
+  mismatched.capabilityVersion = '9.0.0'
+  await assert.rejects(
+    validateDifferentialSuite({ profile, suite: mismatched }),
+    /identity does not match/,
+  )
+
+  const invalidInput = structuredClone(differentialSuite)
+  invalidInput.cases[0].input = { wrong: true }
+  await assert.rejects(
+    validateDifferentialSuite({ profile, suite: invalidInput }),
+    /differential case basic input/,
+  )
+})
+
+test('differential suites cannot hide ordinary result paths without contextual semantics', async () => {
+  const differentialSuite = {
+    schemaVersion: 'openadam.differential-suite.v0.1',
+    capabilityId: profile.id,
+    capabilityVersion: profile.version,
+    comparisonPolicy: {
+      ignoredResultPaths: [{
+        operationId: 'normalize',
+        pointer: '/normalized',
+        semanticRole: 'runtime-context',
+        basis: 'This is deliberately invalid for the test Profile.',
+      }],
+    },
+    cases: [
+      {
+        id: 'hidden-result',
+        operationId: 'normalize',
+        description: 'An invalid attempt to ignore a deterministic business result.',
+        input: { value: 'A' },
+        comparison: {
+          kind: 'canonical-exact-except',
+          ignorePointers: ['/normalized'],
+          ignoredPathBasis: 'This is deliberately invalid for the test Profile.',
+        },
+      },
+    ],
+  }
+  await assert.rejects(
+    validateDifferentialSuite({ profile, suite: differentialSuite }),
+    /not a Profile-declared runtime context path/,
+  )
+})
+
+test('differential comparison policy rejects a business result even with runtime context', async () => {
+  const contextualProfile = structuredClone(profile)
+  contextualProfile.operations[0].semantics.contextSources = ['runtime']
+  const differentialSuite = {
+    schemaVersion: 'openadam.differential-suite.v0.1',
+    capabilityId: profile.id,
+    capabilityVersion: profile.version,
+    comparisonPolicy: {
+      ignoredResultPaths: [{
+        operationId: 'normalize',
+        pointer: '/normalized',
+        semanticRole: 'runtime-context',
+        basis: 'This must remain invalid because normalized is not under context.',
+      }],
+    },
+    cases: [{
+      id: 'hidden-business-result',
+      operationId: 'normalize',
+      description: 'Do not let an operation-wide context declaration hide its business result.',
+      input: { value: 'A' },
+      comparison: {
+        kind: 'canonical-exact-except',
+        ignorePointers: ['/normalized'],
+        ignoredPathBasis: 'This must remain invalid.',
+      },
+    }],
+  }
+  await assert.rejects(
+    validateDifferentialSuite({ profile: contextualProfile, suite: differentialSuite }),
+    /not a Profile-declared runtime context path/,
+  )
 })
 
 test('Provider Manifest v0.3 requires exact canonical adapter operation targets', async () => {

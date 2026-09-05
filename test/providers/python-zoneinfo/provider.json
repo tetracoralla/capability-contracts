@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "openadam.provider-manifest.v0.3",
+  "provider": {
+    "id": "org.openadam.reference.python-zoneinfo",
+    "name": "Python zoneinfo conformance witness",
+    "version": "0.1.0"
+  },
+  "implementations": [
+    {
+      "capabilityId": "org.openadam.time-zone.convert",
+      "capabilityVersion": "0.2.0",
+      "profileDigest": "sha256:010e2bc7f7848d6d8012533fec2820d54182e6da836225f8e2f50c6e50910c0c",
+      "adapter": {
+        "protocol": "openadam.capability-jsonl.v0.1",
+        "command": "python3",
+        "args": ["adapter.py"],
+        "cwd": "."
+      },
+      "adapterBindings": [
+        { "operationId": "convert", "target": "adapter.py#convert" }
+      ],
+      "bindings": [
+        {
+          "operationId": "convert",
+          "transport": "library",
+          "target": "python-zoneinfo.convert",
+          "contractSchemaDigests": {
+            "input": "sha256:d7aa8934d1d521e82eafe11906c8096a140e780dc57568d534d202ef30055928",
+            "output": "sha256:f50efe1193ee0f537547d48ceed3d3178596612ab727357acd9b3b3d2f1577ad"
+          },
+          "transportSchemaDigests": {
+            "input": "sha256:d7aa8934d1d521e82eafe11906c8096a140e780dc57568d534d202ef30055928",
+            "output": "sha256:f50efe1193ee0f537547d48ceed3d3178596612ab727357acd9b3b3d2f1577ad"
+          },
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false
+          }
+        }
+      ]
+    }
+  ]
+}

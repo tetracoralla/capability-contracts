@@ -15,8 +15,9 @@ tooling. It has no end-user interface and does not run an Agent.
   compatibility rules shared by all Profiles.
 - **Capability Profile** — one versioned capability identity with canonical
   input, output, behavior, stable errors, and conformance references.
-- **Capability Provider** — an independent product or service implementing one
-  or more Profiles.
+- **Capability Provider** — a concrete implementation package, product, or
+  service implementing one or more Profiles. Only independently useful
+  providers merit their own product/repository claim.
 - **Provider Manifest** — one provider's version, complete resolved-Profile
   digest, adapter, transport bindings, targets, schema digests,
   semantics-derived annotations, and optional live schema probe.
@@ -24,6 +25,8 @@ tooling. It has no end-user interface and does not run an Agent.
   here only when callers need it to interpret the result.
 - **Conformance Suite** — executable examples and properties scoped to one
   explicit claim level.
+- **Differential Suite** — shared typed inputs and explicit comparison rules
+  for two distinct implementations of one exact Profile.
 
 New Profiles use `openadam.capability-profile.v0.3`. The v0.1 and v0.2 document
 families are compatibility inputs, not templates for new catalog entries.
@@ -123,17 +126,20 @@ that current target and its schemas. Neither lane establishes installed-host
 availability, professional correctness, performance capacity, or human
 experience.
 
-Every current Profile is experimental and provider-seeded. Different-domain
-providers demonstrate that the meta-model can remain domain-neutral; they do
-not establish substitution for any one Profile.
+Every current Profile is experimental and provider-seeded. The time-zone
+Profile additionally has an independently written Python standard-library
+witness and a bounded differential corpus, but not a second released provider
+product or L3 suite claim. Different-domain providers demonstrate that the
+meta-model can remain domain-neutral; they do not establish substitution for
+any one Profile.
 
 ## Repository strategy
 
-Each provider remains an independent repository with its own source, history,
-release, issues, and product acceptance. This repository contains only the
-cross-provider standards assets and reference conformance tooling. Procedure
-Contracts and Direct Execution Runtime are separate repositories with separate
-responsibilities and releases.
+Independently useful provider products keep their own source, history, release,
+issues, and product acceptance. Private reference providers may share a
+`standards-pilots` workspace while retaining distinct package and manifest
+boundaries. This repository contains only the cross-provider standards assets
+and reference conformance tooling; it does not absorb provider source.
 
 ## Non-goals
 

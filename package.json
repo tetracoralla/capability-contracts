@@ -30,6 +30,7 @@
     "check": "npm run test && npm run validate:catalog && npm run check:legal && npm run check:repository",
     "check:legal": "node scripts/generate-third-party-notices.mjs --check",
     "check:local-pilots": "node scripts/check-local-pilots.mjs",
+    "check:time-zone-differential": "node scripts/check-time-zone-differential.mjs",
     "check:repository": "node scripts/check-repository.mjs",
     "generate:third-party-notices": "node scripts/generate-third-party-notices.mjs",
     "test": "node --test test/*.test.mjs",

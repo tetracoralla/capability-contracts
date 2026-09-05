@@ -6,11 +6,13 @@ import {
   assertUniqueSemanticIdentities,
   loadJson,
   validateContractSet,
+  validateDifferentialSuite,
 } from './lib/contracts.mjs'
 
 const catalogRoot = resolve('catalog')
 const profileRoot = resolve(catalogRoot, 'capabilities')
 const suiteRoot = resolve(catalogRoot, 'conformance')
+const differentialRoot = resolve(catalogRoot, 'differential')
 
 try {
   const profileFiles = (await readdir(profileRoot)).filter((file) => file.endsWith('.json'))
@@ -29,6 +31,23 @@ try {
     const suite = await loadJson(resolve(suiteRoot, file))
     await validateContractSet({ profile, profilePath, suite })
     console.log(`PASS ${profile.id}@${profile.version}`)
+  }
+  const differentialFiles = (await readdir(differentialRoot)).filter((file) => file.endsWith('.json'))
+  for (const file of differentialFiles.sort()) {
+    const profileEntry = profiles.find((candidate) => candidate.file === file)
+    if (profileEntry === undefined) {
+      throw new Error(`differential suite ${file} has no matching Capability Profile`)
+    }
+    const differentialSuite = await loadJson(resolve(differentialRoot, file))
+    await validateDifferentialSuite({
+      profile: profileEntry.profile,
+      profilePath: profileEntry.profilePath,
+      suite: differentialSuite,
+    })
+    console.log(
+      `PASS differential ${profileEntry.profile.id}@${profileEntry.profile.version} `
+      + `cases=${differentialSuite.cases.length}`,
+    )
   }
 } catch (error) {
   console.error(`FAIL ${error instanceof Error ? error.message : String(error)}`)

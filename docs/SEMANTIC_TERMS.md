@@ -102,3 +102,12 @@ suite explicitly claims L1 because every one of its six operations covers a
 normal and boundary vector and declares no stable semantic errors or applicable
 ambiguity. That remains one-provider golden coverage; it does not establish L2
 properties, L3 substitution, package-manager equivalence, or L4 effects.
+
+`openadam.differential-suite.v0.1` is a separate current-source comparison
+artifact. It does not upgrade an ordinary Conformance Suite's declared level.
+Its runner compares schema-valid semantic results exactly after removing only
+explicit, present JSON Pointer paths. Each exception states its review basis;
+that text records maintainer judgment and is not a mechanical proof that the
+path is safe to ignore. Error messages are provider presentation and are not
+compared, while error outcome, declared code, and Profile-owned retryability
+are compared.

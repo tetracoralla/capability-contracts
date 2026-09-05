@@ -38,3 +38,38 @@ neighboring directory.
 not portable because some pilot providers are development-only. Its result is
 an integration observation for the checked revisions, not a permanent
 certification.
+
+The runner uses sibling defaults only as development coordinates and accepts an
+explicit absolute source-root override for each pilot. If a source root or its
+Provider Manifest is absent, that pilot is reported as `not_run` and the command
+exits incomplete after checking the available pilots. This standards route does
+not inspect Agent Host private state or treat an installed artifact as current
+provider source.
+
+## Adding a second-provider differential route
+
+1. Require a distinct Provider id and implementation engine; a renamed adapter
+   over the same semantic core is not independence.
+2. Run the ordinary Profile suite against both complete Provider Manifests.
+3. Add a bounded `openadam.differential-suite.v0.1` corpus derived from semantic
+   boundaries, not only the originating provider's happy cases.
+4. Compare exact validated success/error outcomes. Put any runtime/provenance
+   exception in the suite's Profile-owner comparison policy, allow cases to use
+   only those paths, and review the stated basis as a judgment rather than
+   treating the runner as authority.
+5. Keep messages and provider stderr out of mismatch reports; report only
+   outcome kind and canonical digest.
+6. Run each provider's own regression before the shared differential command.
+7. Treat a test-only witness as a drift detector. L3/substitution also needs an
+   independently released provider product and the applicable property,
+   distribution, live-transport, and use observations.
+
+The current reference route is:
+
+```sh
+npm run check:time-zone-differential
+```
+
+It uses the sibling Migratory Time source by default. An isolated candidate may
+set `OPENADAM_MIGRATORY_TIME_SOURCE_ROOT` to an absolute checkout; source absence
+is reported as `not_run/incomplete`, never as a differential PASS.
