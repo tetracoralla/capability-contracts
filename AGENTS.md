@@ -23,7 +23,7 @@ This repository owns portable capability semantics, provider declarations, confo
 - Transport bindings such as MCP are replaceable adapters and must not become the capability identity.
 - Add the smallest negative regression test whenever a drift, bounds, ambiguity, or error-carrier bug is fixed.
 - Report development regression, provider conformance, installed Agent flow, human runtime flow, and owner business acceptance as separate lanes.
-- One provider passing one profile does not prove substitution. Require two independent providers for the same profile plus differential coverage before making a cross-provider substitution claim.
+- One provider passing one profile does not prove substitution. Require two independent implementations of the same Profile plus applicable property and differential coverage, and scope the claim to the tested behavior. An independent engine witness need not be a separately released product; deployment and adoption claims require their own observations. See `docs/DIFFERENTIAL_CONFORMANCE.md`.
 - Do not auto-commit or publish. Repository name, public organization, license, and stable-version governance remain owner decisions.
 
 ## Scope guard

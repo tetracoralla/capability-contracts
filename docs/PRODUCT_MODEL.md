@@ -36,6 +36,10 @@ change caller-visible meaning, errors, state effects, ambiguity, or schemas use
 a new semantic version; implementation-only optimization remains provider
 work when the bound meaning is conserved.
 
+An unpublished, unbound proposal outside the catalog may be revised or removed
+without a compatibility migration. A published contract may have consumers the
+maintainer cannot see; absence of known consumers does not make it a draft.
+
 ## Relationship to Procedure and providers
 
 ```text
@@ -128,10 +132,12 @@ experience.
 
 Every current Profile is experimental and provider-seeded. The time-zone
 Profile additionally has an independently written Python standard-library
-witness and a bounded differential corpus, but not a second released provider
-product or L3 suite claim. Different-domain providers demonstrate that the
-meta-model can remain domain-neutral; they do not establish substitution for
-any one Profile.
+witness and bounded differential coverage. That supplies scoped semantic
+observations independently of product release; it does not promote the ordinary
+suite from L0 or establish a released replacement. Different-domain providers
+demonstrate that the meta-model can remain domain-neutral; they do not establish
+substitution for any one Profile. See
+[Differential conformance](DIFFERENTIAL_CONFORMANCE.md) for the claim boundaries.
 
 ## Repository strategy
 

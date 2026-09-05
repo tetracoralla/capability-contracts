@@ -10,7 +10,7 @@ distribute provider binaries.
 | --- | --- | --- | --- |
 | `org.openadam.file.inspect@0.1.0` | File Vitals | [tetracoralla/file-vitals](https://github.com/tetracoralla/file-vitals) | Provider-seeded experimental Profile |
 | `org.openadam.structured-data.analyze@0.1.0` | BatchTicket | [tetracoralla/BatchTicket](https://github.com/tetracoralla/BatchTicket) | Provider-seeded experimental Profile |
-| `org.openadam.time-zone.convert@0.2.0` | Migratory Time; Python `zoneinfo` conformance witness | [tetracoralla/migratory-time](https://github.com/tetracoralla/migratory-time); witness is test-only here | 12-case current-source differential passes; no second released provider product or substitution claim |
+| `org.openadam.time-zone.convert@0.2.0` | Migratory Time; Python `zoneinfo` conformance witness | [tetracoralla/migratory-time](https://github.com/tetracoralla/migratory-time); witness is test-only here | Bounded current-source semantic comparison; ordinary suite L0; no released replacement claim |
 | `org.openadam.raster.prepare@0.2.0` | development pilot | not published here | Active provider binding; `0.1.0` retained as superseded catalog identity |
 | `org.openadam.raster.verify@0.1.0` | development pilot | not published here | Catalog and maintainer-local integration only |
 | `org.openadam.projective.transform@0.2.0` | development pilot | not published here | Active provider binding; `0.1.0` retained as superseded catalog identity |
@@ -29,7 +29,9 @@ Single-Profile conformance continues to assess only its named Profile; it
 does not certify other entries in the Provider Manifest.
 
 No Profile currently has two independently released provider products. The
-time-zone witness uses a separately written engine and manifest, which is
-valuable for finding semantic drift, but it has no independent product,
-transport release, installation path, support boundary, or user adoption. The
-project therefore makes no cross-provider substitution claim.
+time-zone witness uses a separately written engine and manifest. Its tested
+semantic agreement is useful independently of product release, while its
+installation, support, and adoption remain unestablished. The
+[differential and Host experiments](DIFFERENTIAL_CONFORMANCE.md) describe the
+bounded current-source observations; they do not establish a released product
+replacement or equivalence beyond their tested scope.

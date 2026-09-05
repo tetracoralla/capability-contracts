@@ -140,7 +140,12 @@ Profile. Do not say “interchangeable”, “substitutable”, or “standardiz
 providers” without the applicable L2/L3 evidence.
 
 A test-only independent implementation can reveal contract or provider drift,
-but it is not automatically a second provider product. Differential cases must
+and can support semantic comparison without being a second released product.
+Assess implementation independence, applicable properties, the shared corpus,
+and comparison exceptions for that semantic claim. Assess distribution and
+live-use readiness separately for a product replacement claim; do not require
+an otherwise unused second product merely to obtain a conformance label.
+Differential cases must
 validate through both current manifests and result schemas. Ignored paths must
 be present in both results, non-overlapping, justified, and limited to
 Profile-declared context/provenance. That structural check does not establish

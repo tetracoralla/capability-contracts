@@ -60,9 +60,12 @@ provider source.
 5. Keep messages and provider stderr out of mismatch reports; report only
    outcome kind and canonical digest.
 6. Run each provider's own regression before the shared differential command.
-7. Treat a test-only witness as a drift detector. L3/substitution also needs an
-   independently released provider product and the applicable property,
-   distribution, live-transport, and use observations.
+7. Scope semantic substitution claims to the tested independent implementations,
+   Profile, input domain, properties, and differential coverage. A thin adapter
+   around an independent engine can supply this evidence without a separate
+   product release. Verify distribution, installation, live transports, and use
+   separately before claiming a deployable replacement or adoption; see
+   [Differential conformance](DIFFERENTIAL_CONFORMANCE.md).
 
 The current reference route is:
 
